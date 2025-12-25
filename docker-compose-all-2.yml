@@ -1,6 +1,6 @@
 services:
   emby-controller:
-    image: emby
+    image: tamakoo/emby-controller:latest
     env_file:
       - .env
     volumes:

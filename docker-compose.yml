@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   emby-controller:
-    image: ranjie/emby-controller:latest
+    image: tamakoo/emby-controller:latest
     env_file:
       - .env
     volumes:
