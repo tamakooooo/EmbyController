@@ -20,6 +20,7 @@ use app\media\validate\Register as RegisterValidate;
 use think\facade\View;
 use think\facade\Config;
 use think\facade\Cache;
+use think\facade\Db;
 
 
 class Server extends BaseController
@@ -207,7 +208,13 @@ class Server extends BaseController
         }
         if (Request::isPost()) {
             $data = Request::post();
-            $embyUserName = $data['embyUserName'];
+            $embyUserName = $data['embyUserName'] ?? '';
+            
+            // 验证用户名
+            if (empty($embyUserName)) {
+                return json(['code' => 400, 'message' => '用户名不能为空']);
+            }
+            
             $url = Config::get('media.urlBase') . 'Users/New?api_key=' . Config::get('media.apiKey');
             $data = [
                 'Name' => $embyUserName,
@@ -220,42 +227,71 @@ class Server extends BaseController
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'accept: application/json',
                 'Content-Type: application/json'
             ]);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
             $response = curl_exec($ch);
-            // 如果是400错误，说明用户名已存在
-            if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 400) {
-                return json(['code' => 400, 'message' => '用户名已存在']);
-            } else {
-                $embyUserId = json_decode($response, true)['Id'];
-                $embyUserModel = new EmbyUserModel();
-                $embyUserModel->save([
-                    'userId' => Session::get('r_user')->id,
-                    'embyId' => $embyUserId,
-                ]);
-                $embyUser = $embyUserId;
-
-                $url = Config::get('media.urlBase') . 'Users/' . $embyUserId . '/Policy?api_key=' . Config::get('media.apiKey');
-                $data = ['IsDisabled' => true];
-
-                $ch = curl_init($url);
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                    'accept: */*',
-                    'Content-Type: application/json'
-                ]);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-
-                curl_exec($ch);
-
-                Session::set('m_embyId', $embyUserId);
-
-                return json(['code' => 200, 'message' => '创建成功']);
+            
+            // 检查 curl 错误
+            if (curl_errno($ch)) {
+                $error = curl_error($ch);
+                curl_close($ch);
+                return json(['code' => 500, 'message' => '连接Emby服务器失败：' . $error]);
             }
+            
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            
+            // 检查响应
+            if ($response === false || $response === '') {
+                return json(['code' => 500, 'message' => 'Emby服务器无响应']);
+            }
+            
+            // 如果是400错误，说明用户名已存在
+            if ($httpCode == 400) {
+                return json(['code' => 400, 'message' => '用户名已存在']);
+            }
+            
+            // 检查其他HTTP错误
+            if ($httpCode >= 400) {
+                return json(['code' => $httpCode, 'message' => '创建Emby账号失败，错误代码：' . $httpCode]);
+            }
+            
+            // 解析响应
+            $responseData = json_decode($response, true);
+            if (json_last_error() !== JSON_ERROR_NONE || !isset($responseData['Id'])) {
+                return json(['code' => 500, 'message' => '解析Emby响应失败']);
+            }
+            
+            $embyUserId = $responseData['Id'];
+            $embyUserModel = new EmbyUserModel();
+            $embyUserModel->save([
+                'userId' => Session::get('r_user')->id,
+                'embyId' => $embyUserId,
+            ]);
+
+            // 禁用新创建的用户
+            $url = Config::get('media.urlBase') . 'Users/' . $embyUserId . '/Policy?api_key=' . Config::get('media.apiKey');
+            $data = ['IsDisabled' => true];
+
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'accept: */*',
+                'Content-Type: application/json'
+            ]);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            curl_exec($ch);
+            curl_close($ch);
+
+            Session::set('m_embyId', $embyUserId);
+
+            return json(['code' => 200, 'message' => '创建成功']);
         } else if (Request::isGet()) {
             return view();
         }
@@ -701,33 +737,47 @@ class Server extends BaseController
                         'message' => 'LifeTime用户无需续期'
                     ]);
                 }
-                if (strtotime($activateTo) > time()) {
-                    $activateTo = date('Y-m-d H:i:s', strtotime($activateTo) + $this->renewSeconds);
-                } else {
-                    $activateTo = date('Y-m-d H:i:s', time() + $this->renewSeconds);
+                
+                // 使用事务保证数据一致性
+                Db::startTrans();
+                try {
+                    if (strtotime($activateTo) > time()) {
+                        $activateTo = date('Y-m-d H:i:s', strtotime($activateTo) + $this->renewSeconds);
+                    } else {
+                        $activateTo = date('Y-m-d H:i:s', time() + $this->renewSeconds);
+                    }
+                    $embyUser->activateTo = $activateTo;
+                    $embyUser->save();
+                    $user->rCoin = $user->rCoin - $this->renewCost;
+                    $user->save();
+                    $financeRecordModel = new FinanceRecordModel();
+                    $financeRecordModel->save([
+                        'userId' => Session::get('r_user')->id,
+                        'action' => 3,
+                        'count' => $this->renewCost,
+                        'recordInfo' => [
+                            'message' => '使用余额续期Emby账号'
+                        ]
+                    ]);
+                    
+                    Db::commit();
+                    
+                    sendTGMessage(Session::get('r_user')->id, '您的Emby账号已续期至 <strong>' . $activateTo . '</strong>');
+                    // 更新Session
+                    $r_user = Session::get('r_user');
+                    $r_user->rCoin = $user->rCoin;
+                    Session::set('r_user', $r_user);
+                    return json([
+                        'code' => 200,
+                        'message' => '续期成功'
+                    ]);
+                } catch (\Exception $e) {
+                    Db::rollback();
+                    return json([
+                        'code' => 500,
+                        'message' => '续期失败，请稍后重试'
+                    ]);
                 }
-                $embyUser->activateTo = $activateTo;
-                $embyUser->save();
-                $user->rCoin = $user->rCoin - $this->renewCost;
-                $user->save();
-                $financeRecordModel = new FinanceRecordModel();
-                $financeRecordModel->save([
-                    'userId' => Session::get('r_user')->id,
-                    'action' => 3,
-                    'count' => $this->renewCost,
-                    'recordInfo' => [
-                        'message' => '使用余额续期Emby账号'
-                    ]
-                ]);
-                sendTGMessage(Session::get('r_user')->id, '您的Emby账号已续期至 <strong>' . $activateTo . '</strong>');
-                // 更新Session
-                $r_user = Session::get('r_user');
-                $r_user->rCoin = $user->rCoin;
-                Session::set('r_user', $r_user);
-                return json([
-                    'code' => 200,
-                    'message' => '续期成功'
-                ]);
             } else {
                 return json([
                     'code' => 400,

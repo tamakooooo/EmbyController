@@ -426,6 +426,10 @@ class Admin extends BaseController
     // 用户列表页面
     public function userList()
     {
+        if (session('r_user') == null || session('r_user')['authority'] != 0) {
+            return redirect((string) url('/media/user/index'));
+        }
+        
         $page = input('page', 1);
         $pageSize = input('pageSize', 10);
         $keyword = input('keyword', '');
@@ -466,6 +470,10 @@ class Admin extends BaseController
     // 添加用户页面
     public function addUser()
     {
+        if (session('r_user') == null || session('r_user')['authority'] != 0) {
+            return redirect((string) url('/media/user/index'));
+        }
+        
         if (request()->isPost()) {
             $data = input('post.');
 
@@ -497,6 +505,10 @@ class Admin extends BaseController
     // 编辑用户
     public function editUser()
     {
+        if (session('r_user') == null || session('r_user')['authority'] != 0) {
+            return redirect((string) url('/media/user/index'));
+        }
+        
         $userModel = new UserModel();
 
         if (request()->isPost()) {
@@ -606,6 +618,10 @@ class Admin extends BaseController
     // 用户详情
     public function userDetail()
     {
+        if (session('r_user') == null || session('r_user')['authority'] != 0) {
+            return redirect((string) url('/media/user/index'));
+        }
+        
         $id = input('id');
         $userModel = new UserModel();
         $user = $userModel->find($id);
@@ -616,6 +632,10 @@ class Admin extends BaseController
     // 兑换码列表页面
     public function exchangeCodeList()
     {
+        if (session('r_user') == null || session('r_user')['authority'] != 0) {
+            return redirect((string) url('/media/user/index'));
+        }
+        
         $page = input('page', 1);
         $pageSize = input('pageSize', 10);
         $keyword = input('keyword', '');
@@ -669,6 +689,10 @@ class Admin extends BaseController
     // 添加兑换码
     public function addExchangeCode()
     {
+        if (session('r_user') == null || session('r_user')['authority'] != 0) {
+            return redirect((string) url('/media/user/index'));
+        }
+        
         if (request()->isPost()) {
             $data = input('post.');
             $mode = $data['mode'] ?? 'single';

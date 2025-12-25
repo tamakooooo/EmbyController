@@ -242,6 +242,13 @@ class User extends BaseController
                             if ($user) {
                                 Session::set('r_user', $user);
                                 $results = "注册成功";
+                                
+                                // 递减注册名额计数（如果不是无限制模式）
+                                if ($avableRegisterCount != -1) {
+                                    $sysConfigModel->where('key', 'avableRegisterCount')
+                                        ->update(['value' => $avableRegisterCount - 1]);
+                                }
+                                
                                 if (is_string($user->userInfo)) {
                                     $userInfoArray = json_decode(json_encode($user->userInfo), true);
                                 } else {
