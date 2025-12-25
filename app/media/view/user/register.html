@@ -1,10 +1,13 @@
 {__NOLAYOUT__}
 
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>注册 - 影视管理站-<?php echo config('app.app_name'); ?></title>
+    <title>注册 - 影视管理站-
+        <?php echo config('app.app_name'); ?>
+    </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <meta name="description" content="专业的影视管理平台" />
@@ -49,235 +52,276 @@
         }
     </style>
 </head>
+
 <body class="min-h-screen">
-<div class="min-h-screen w-full flex items-center justify-center p-4">
-    <div class="w-full max-w-md">
-        <div class="glass-effect rounded-2xl p-6 md:p-8">
-            <div class="text-center mb-8">
-                <h1 class="text-2xl md:text-3xl font-bold mb-2">创建账号</h1>
-                <p class="text-white/60">加入<?php echo config('app.app_name'); ?>，开启您的影视之旅</p>
-            </div>
-
-            <form class="space-y-6" id="registerForm" action="{:url('media/user/register')}" method="post">
-                <div class="space-y-2">
-                    <label class="text-sm text-white/80">用户名</label>
-                    <div class="relative">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        <input type="text" id="username" name="username" class="w-full pl-10 bg-white/5 border-white/10 focus:border-white/20 rounded-lg p-2" placeholder="您的用户名" required>
-                    </div>
+    <div class="min-h-screen w-full flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <div class="glass-effect rounded-2xl p-6 md:p-8">
+                <div class="text-center mb-8">
+                    <h1 class="text-2xl md:text-3xl font-bold mb-2">创建账号</h1>
+                    <p class="text-white/60">加入
+                        <?php echo config('app.app_name'); ?>，开启您的影视之旅
+                    </p>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="text-sm text-white/80">邮箱地址</label>
-                    <div class="relative">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 17.5L11 6.5L2 15.5"></path><path d="M2 15.5V5H9"></path></svg>
-                        <input type="email" id="email" name="email" class="w-full pl-10 bg-white/5 border-white/10 focus:border-white/20 rounded-lg p-2" placeholder="your@email.com" required>
-                    </div>
-                </div>
-
-                {if condition="$enableEmail"}
-                <div class="space-y-2">
-                    <label class="text-sm text-white/80">验证码</label>
-                    <div class="flex gap-2">
-                        <div class="relative flex-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.636 5.636l2.122 2.122m8.484 8.484l2.122 2.122M5.636 18.364l2.122-2.122m8.484-8.484l2.122-2.122"></path></svg>
-                            <input type="text" id="verify" name="verify" class="w-full pl-10 bg-white/5 border-white/10 focus:border-white/20 rounded-lg p-2" placeholder="请输入验证码" required>
+                <form class="space-y-6" id="registerForm" action="{:url('media/user/register')}" method="post">
+                    <div class="space-y-2">
+                        <label class="text-sm text-white/80">用户名</label>
+                        <div class="relative">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 h-5 w-5"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <input type="text" id="username" name="username"
+                                class="w-full pl-10 bg-white/5 border-white/10 focus:border-white/20 rounded-lg p-2"
+                                placeholder="您的用户名" required>
                         </div>
-                        <button type="button" id="sendCodeBtn" class="glass-effect rounded-lg px-4 py-2 opacity-50 cursor-not-allowed" disabled>
-                            发送验证码
-                        </button>
                     </div>
-                </div>
-                {/if}
 
-                <div class="space-y-2">
-                    <label class="text-sm text-white/80">密码</label>
-                    <div class="relative">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
-                        <input type="password" id="password" name="password" class="w-full pl-10 bg-white/5 border-white/10 focus:border-white/20 rounded-lg p-2" placeholder="••••••••" required>
+                    <div class="space-y-2">
+                        <label class="text-sm text-white/80">邮箱地址</label>
+                        <div class="relative">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 h-5 w-5"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 17.5L11 6.5L2 15.5"></path>
+                                <path d="M2 15.5V5H9"></path>
+                            </svg>
+                            <input type="email" id="email" name="email"
+                                class="w-full pl-10 bg-white/5 border-white/10 focus:border-white/20 rounded-lg p-2"
+                                placeholder="your@email.com" required>
+                        </div>
                     </div>
-                </div>
 
-                {if condition="$sitekey && $sitekey != ''"}
-                <div
-                        class="cf-turnstile"
-                        data-sitekey="{$sitekey}"
-                        data-theme="dark"
-                ></div>
-                {/if}
+                    {if condition="$enableEmail"}
+                    <div class="space-y-2">
+                        <label class="text-sm text-white/80">验证码</label>
+                        <div class="flex gap-2">
+                            <div class="relative flex-1">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 h-5 w-5"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M12 3v3m0 12v3M3 12h3m12 0h3M5.636 5.636l2.122 2.122m8.484 8.484l2.122 2.122M5.636 18.364l2.122-2.122m8.484-8.484l2.122-2.122">
+                                    </path>
+                                </svg>
+                                <input type="text" id="verify" name="verify"
+                                    class="w-full pl-10 bg-white/5 border-white/10 focus:border-white/20 rounded-lg p-2"
+                                    placeholder="请输入验证码" required>
+                            </div>
+                            <button type="button" id="sendCodeBtn"
+                                class="glass-effect rounded-lg px-4 py-2 opacity-50 cursor-not-allowed" disabled>
+                                发送验证码
+                            </button>
+                        </div>
+                    </div>
+                    {/if}
 
-                {if condition="$result != ''"}
-                <div class="mb-6">
-                    <span style="color:red; ">{$result}</span>
-                </div>
-                {/if}
+                    <div class="space-y-2">
+                        <label class="text-sm text-white/80">密码</label>
+                        <div class="relative">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 h-5 w-5"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4">
+                                </path>
+                            </svg>
+                            <input type="password" id="password" name="password"
+                                class="w-full pl-10 bg-white/5 border-white/10 focus:border-white/20 rounded-lg p-2"
+                                placeholder="••••••••" required>
+                        </div>
+                    </div>
 
-                {if condition="$avableRegisterCount && $avableRegisterCount > 0"}
-                <div class="mb-6">
-                    <span style="color:#0aa937; ">剩余可注册数：{$avableRegisterCount}</span>
-                </div>
-                {elseif condition="$avableRegisterCount == 0"}
-                <div class="mb-6">
-                    <span style="color:red; ">注册已关闭</span>
-                </div>
-                {elseif condition="$avableRegisterCount == -1"}
-                {/if}
+                    {if condition="$sitekey && $sitekey != ''"}
+                    <div class="cf-turnstile" data-sitekey="{$sitekey}" data-theme="dark"></div>
+                    {/if}
 
-                <div class="flex items-center space-x-2">
-                    <input type="checkbox" id="terms" name="terms" class="rounded bg-white/5 border-white/10" required>
-                    <label for="terms" class="text-sm text-white/60">
-                        我同意
-                        <a href="javascript:void(0)" onclick="showPolicy('terms')" class="text-white hover:underline mx-1">服务条款</a>
-                        和
-                        <a href="javascript:void(0)" onclick="showPolicy('privacy')" class="text-white hover:underline ml-1">隐私政策</a>
-                    </label>
-                </div>
+                    {if condition="$result != ''"}
+                    <div class="mb-6">
+                        <span style="color:red; ">{$result}</span>
+                    </div>
+                    {/if}
 
-                <button type="submit" class="w-full glass-effect hover:bg-white/20 rounded-lg p-2 flex items-center justify-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M19 8l2 2l4-4"></path></svg>
-                    <span>注册</span>
-                </button>
+                    {if condition="$avableRegisterCount && $avableRegisterCount > 0"}
+                    <div class="mb-6">
+                        <span style="color:#0aa937; ">剩余可注册数：{$avableRegisterCount}</span>
+                    </div>
+                    {elseif condition="$avableRegisterCount == 0"}
+                    <div class="mb-6">
+                        <span style="color:red; ">注册已关闭</span>
+                    </div>
+                    {elseif condition="$avableRegisterCount == -1"}
+                    {/if}
 
-                <div class="text-center text-sm text-white/60">
-                    已有账号？
-                    <a href="login.html" class="text-white hover:underline">立即登录</a>
-                </div>
-            </form>
+                    <div class="flex items-center space-x-2">
+                        <input type="checkbox" id="terms" name="terms" class="rounded bg-white/5 border-white/10"
+                            required>
+                        <label for="terms" class="text-sm text-white/60">
+                            我同意
+                            <a href="javascript:void(0)" onclick="showPolicy('terms')"
+                                class="text-white hover:underline mx-1">服务条款</a>
+                            和
+                            <a href="javascript:void(0)" onclick="showPolicy('privacy')"
+                                class="text-white hover:underline ml-1">隐私政策</a>
+                        </label>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full glass-effect hover:bg-white/20 rounded-lg p-2 flex items-center justify-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M19 8l2 2l4-4"></path>
+                        </svg>
+                        <span>注册</span>
+                    </button>
+
+                    <div class="text-center text-sm text-white/60">
+                        已有账号？
+                        <a href="/media/user/login" class="text-white hover:underline">立即登录</a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<div id="policyModal" class="modal-overlay fixed inset-0 z-50 hidden flex items-center justify-center">
-    <div class="modal-content glass-effect rounded-2xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold" id="modalTitle"></h2>
-                <button onclick="closeModal()" class="text-white/60 hover:text-white">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-            <div id="modalContent" class="prose prose-invert max-w-none">
-                <!-- 内容将通过 JavaScript 动态加载 -->
+    <div id="policyModal" class="modal-overlay fixed inset-0 z-50 hidden flex items-center justify-center">
+        <div class="modal-content glass-effect rounded-2xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold" id="modalTitle"></h2>
+                    <button onclick="closeModal()" class="text-white/60 hover:text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="modalContent" class="prose prose-invert max-w-none">
+                    <!-- 内容将通过 JavaScript 动态加载 -->
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    document.getElementById('registerForm').addEventListener('submit', function(event) {
-        const termsCheckbox = document.getElementById('terms');
-        if (!termsCheckbox.checked) {
-            event.preventDefault();
-            rStatusMessage.warning('请同意服务条款和隐私政策。');
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const emailInput = document.getElementById('email');
-        const sendCodeBtn = document.getElementById('sendCodeBtn');
-        let countdown = 60;
-        let timer = null;
-
-        function validateEmail(email) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        }
-
-        function startCountdown() {
-            countdown = 60;
-
-            timer = setInterval(() => {
-                countdown--;
-                sendCodeBtn.textContent = `${countdown}秒后重试`;
-
-                if (countdown <= 0) {
-                    clearInterval(timer);
-                    sendCodeBtn.disabled = false;
-                    sendCodeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                    sendCodeBtn.textContent = '发送验证码';
-                }
-            }, 1000);
-        }
-
-        emailInput.addEventListener('input', function() {
-            if (validateEmail(this.value) && !timer) {
-                sendCodeBtn.disabled = false;
-                sendCodeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            } else {
-                sendCodeBtn.disabled = true;
-                sendCodeBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function (event) {
+            const termsCheckbox = document.getElementById('terms');
+            if (!termsCheckbox.checked) {
+                event.preventDefault();
+                rStatusMessage.warning('请同意服务条款和隐私政策。');
             }
         });
 
-        sendCodeBtn.addEventListener('click', function() {
-            if (validateEmail(emailInput.value)) {
-                sendCodeBtn.disabled = true;
-                sendCodeBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                var data = {
-                    email: emailInput.value,
-                    action: 'register'
-                };
-                $.post('/media/user/sendVerifyCode', data, function (res) {
-                    if (res.code === 200) {
-                        rStatusMessage.success('验证码发送成功');
-                        startCountdown();
-                    } else {
-                        rStatusMessage.error(res.message);
+        document.addEventListener('DOMContentLoaded', function () {
+            const emailInput = document.getElementById('email');
+            const sendCodeBtn = document.getElementById('sendCodeBtn');
+            let countdown = 60;
+            let timer = null;
+
+            function validateEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+
+            function startCountdown() {
+                countdown = 60;
+
+                timer = setInterval(() => {
+                    countdown--;
+                    sendCodeBtn.textContent = `${countdown}秒后重试`;
+
+                    if (countdown <= 0) {
+                        clearInterval(timer);
                         sendCodeBtn.disabled = false;
                         sendCodeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        sendCodeBtn.textContent = '发送验证码';
                     }
-                });
+                }, 1000);
             }
-        });
-    });
 
-    function showPolicy(type) {
-        const modal = document.getElementById('policyModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalContent = document.getElementById('modalContent');
-        
-        // 显示加载动画
-        modalContent.innerHTML = `
+            emailInput.addEventListener('input', function () {
+                if (validateEmail(this.value) && !timer) {
+                    sendCodeBtn.disabled = false;
+                    sendCodeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    sendCodeBtn.disabled = true;
+                    sendCodeBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            });
+
+            sendCodeBtn.addEventListener('click', function () {
+                if (validateEmail(emailInput.value)) {
+                    sendCodeBtn.disabled = true;
+                    sendCodeBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    var data = {
+                        email: emailInput.value,
+                        action: 'register'
+                    };
+                    $.post('/media/user/sendVerifyCode', data, function (res) {
+                        if (res.code === 200) {
+                            rStatusMessage.success('验证码发送成功');
+                            startCountdown();
+                        } else {
+                            rStatusMessage.error(res.message);
+                            sendCodeBtn.disabled = false;
+                            sendCodeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        }
+                    });
+                }
+            });
+        });
+
+        function showPolicy(type) {
+            const modal = document.getElementById('policyModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalContent = document.getElementById('modalContent');
+
+            // 显示加载动画
+            modalContent.innerHTML = `
             <div class="flex justify-center items-center py-12">
                 <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
             </div>
         `;
-        
-        // 显示模态框
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modal.classList.add('show');
-            modal.querySelector('.modal-content').classList.add('show');
-        }, 10);
 
-        // 根据类型加载不同的内容
-        fetch(`/media/user/${type}?ajax=1`)
-            .then(response => response.text())
-            .then(html => {
-                modalTitle.textContent = type === 'terms' ? '服务条款' : '隐私政策';
-                modalContent.innerHTML = html;
-            })
-            .catch(error => {
-                modalContent.innerHTML = `<p class="text-red-500">加载失败: ${error.message}</p>`;
-            });
-    }
+            // 显示模态框
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.add('show');
+                modal.querySelector('.modal-content').classList.add('show');
+            }, 10);
 
-    function closeModal() {
-        const modal = document.getElementById('policyModal');
-        modal.classList.remove('show');
-        modal.querySelector('.modal-content').classList.remove('show');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 300);
-    }
-
-    // 点击模态框外部关闭
-    document.getElementById('policyModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeModal();
+            // 根据类型加载不同的内容
+            fetch(`/media/user/${type}?ajax=1`)
+                .then(response => response.text())
+                .then(html => {
+                    modalTitle.textContent = type === 'terms' ? '服务条款' : '隐私政策';
+                    modalContent.innerHTML = html;
+                })
+                .catch(error => {
+                    modalContent.innerHTML = `<p class="text-red-500">加载失败: ${error.message}</p>`;
+                });
         }
-    });
-</script>
+
+        function closeModal() {
+            const modal = document.getElementById('policyModal');
+            modal.classList.remove('show');
+            modal.querySelector('.modal-content').classList.remove('show');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // 点击模态框外部关闭
+        document.getElementById('policyModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
 </body>
+
 </html>

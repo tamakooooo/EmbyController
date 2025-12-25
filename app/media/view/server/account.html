@@ -64,6 +64,8 @@
                         } else if (strtotime($activateTo) < time() + 86400){
                             echo date('Y-m-d H:i:s',strtotime($activateTo));
                             echo '<span class="text-red-400">(即将过期)</span>';
+                        } else {
+                            echo date('Y-m-d H:i:s',strtotime($activateTo));
                         }
                     }else{
                         echo 'Lifetime';
@@ -82,14 +84,12 @@
             {else}
             <span class="px-3 py-1 rounded-full bg-red-500/20 text-red-400">未设置</span>
             {/if}
-            <button
-                    onclick="showPasswordDialog()"
-                    class="ml-2 px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-            >
+            <button onclick="showPasswordDialog()"
+                class="ml-2 px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors">
                 {if $embyUserFromEmby->HasPassword == true}
-                设置密码
-                {else}
                 更新密码
+                {else}
+                设置密码
                 {/if}
             </button>
         </div>
@@ -121,30 +121,35 @@
         <!-- 余额激活 -->
         <div class="glass-effect rounded-lg p-4">
             <h3 class="text-lg font-semibold mb-4">余额激活</h3>
-            <p class="mb-4">您的账户余额为<br/><span class="text-xl font-bold text-green-400"><?php echo number_format($userFromDatabase->rCoin, 2); ?> RCoin</span></p>
-            <button class="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors" onclick="activateEmbyUserByBalance()">激活</button>
+            <p class="mb-4">您的账户余额为<br /><span class="text-xl font-bold text-green-400">
+                    <?php echo number_format($userFromDatabase->rCoin, 2); ?> RCoin
+                </span></p>
+            <button class="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors"
+                onclick="activateEmbyUserByBalance()">激活</button>
         </div>
 
         <!-- 兑换码激活 -->
         <div class="glass-effect rounded-lg p-4">
             <h3 class="text-lg font-semibold mb-4">兑换码激活</h3>
-            <input type="text" name="code" autocomplete="off" placeholder="兑换码" class="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 mb-4">
-            <button class="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors" onclick="activateEmbyUserByCode()">兑换</button>
+            <input type="text" id="activateCode" name="activateCode" autocomplete="off" placeholder="兑换码"
+                class="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 mb-4">
+            <button class="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors"
+                onclick="activateEmbyUserByCode()">兑换</button>
         </div>
 
         <!-- 充值激活 -->
-<!--        <div class="glass-effect rounded-lg p-4">-->
-<!--            <h3 class="text-lg font-semibold mb-4">充值激活</h3>-->
-<!--            <button-->
-<!--                    onclick="activateEmbyUserByPay()"-->
-<!--                    class="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors flex items-center justify-center gap-2"-->
-<!--            >-->
-<!--                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
-<!--                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />-->
-<!--                </svg>-->
-<!--                使用支付宝支付-->
-<!--            </button>-->
-<!--        </div>-->
+        <!--        <div class="glass-effect rounded-lg p-4">-->
+        <!--            <h3 class="text-lg font-semibold mb-4">充值激活</h3>-->
+        <!--            <button-->
+        <!--                    onclick="activateEmbyUserByPay()"-->
+        <!--                    class="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors flex items-center justify-center gap-2"-->
+        <!--            >-->
+        <!--                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
+        <!--                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />-->
+        <!--                </svg>-->
+        <!--                使用支付宝支付-->
+        <!--            </button>-->
+        <!--        </div>-->
     </div>
 </div>
 {/if}
@@ -179,7 +184,9 @@
         <span>自动续期</span>
         <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" class="sr-only peer" id="autoRenew" name="auto-renew" {if $autoRenew}checked{/if}>
-            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            <div
+                class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+            </div>
         </label>
     </div>
 
@@ -187,32 +194,38 @@
         <!-- 余额续期 -->
         <div class="glass-effect rounded-lg p-4">
             <h3 class="text-lg font-semibold mb-4">余额续期</h3>
-            <p class="mb-4">您的账户余额为<br/><span class="text-xl font-bold text-green-400"><?php echo number_format($userFromDatabase->rCoin, 2); ?> RCoin</span></p>
-            <button class="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors" onclick="continueSubscribeEmbyUserByBalance()">续期</button>
+            <p class="mb-4">您的账户余额为<br /><span class="text-xl font-bold text-green-400">
+                    <?php echo number_format($userFromDatabase->rCoin, 2); ?> RCoin
+                </span></p>
+            <button class="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors"
+                onclick="continueSubscribeEmbyUserByBalance()">续期</button>
         </div>
 
         <!-- 兑换码续期 -->
         <div class="glass-effect rounded-lg p-4">
             <h3 class="text-lg font-semibold mb-4">兑换码续期</h3>
-            <input type="text" name="code" autocomplete="off" placeholder="兑换码" class="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 mb-4">
-            <button class="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors" onclick="continueSubscribeEmbyUserByCode()">兑换</button>
+            <input type="text" id="renewCode" name="renewCode" autocomplete="off" placeholder="兑换码"
+                class="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 mb-4">
+            <button class="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors"
+                onclick="continueSubscribeEmbyUserByCode()">兑换</button>
         </div>
 
         <!-- 充值续期 -->
-<!--        <div class="glass-effect rounded-lg p-4">-->
-<!--            <h3 class="text-lg font-semibold mb-4">充值续期</h3>-->
-<!--            <button-->
-<!--                    onclick="continueSubscribeEmbyUserByPay()"-->
-<!--                    class="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors flex items-center justify-center gap-2"-->
-<!--            >-->
-<!--                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
-<!--                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />-->
-<!--                </svg>-->
-<!--                使用支付宝支付-->
-<!--            </button>-->
-<!--        </div>-->
+        <!--        <div class="glass-effect rounded-lg p-4">-->
+        <!--            <h3 class="text-lg font-semibold mb-4">充值续期</h3>-->
+        <!--            <button-->
+        <!--                    onclick="continueSubscribeEmbyUserByPay()"-->
+        <!--                    class="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors flex items-center justify-center gap-2"-->
+        <!--            >-->
+        <!--                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
+        <!--                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />-->
+        <!--                </svg>-->
+        <!--                使用支付宝支付-->
+        <!--            </button>-->
+        <!--        </div>-->
     </div>
-    {if ($userFromDatabase->rCoin >= $lifetimecost) && ($userFromDatabase->authority >= $lifetimeauthority || $userFromDatabase->authority == 0) && ($embyUserFromDatabase->activateTo > time())}
+    {if ($userFromDatabase->rCoin >= $lifetimecost) && ($userFromDatabase->authority >= $lifetimeauthority ||
+    $userFromDatabase->authority == 0) && ($embyUserFromDatabase->activateTo > time())}
     <div class="glass-effect rounded-lg p-4">
         <h3 class="text-lg font-semibold mb-4">续期至Lifetime</h3>
         <p class="mb-2">Lifetime：Lifetime用户享有永久有效期，无需续期。</p>
@@ -220,8 +233,11 @@
         <p class="mb-2">价格：{$lifetimecost} RCoin/Lifetime</p>
         <p class="mb-2">声明：我们不对因使用本服务而造成的任何损失或损害负责。</p>
         <p class="mb-4">账户异常操作：任何异常账户活动可能导致账户封号。</p>
-        <p class="mb-4">您的账户余额为<br/><span class="text-xl font-bold text-green-400"><?php echo number_format($userFromDatabase->rCoin, 2); ?> RCoin</span></p>
-        <button class="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors" onclick="continueSubscribeEmbyUserToLifetimeByRCoin()">续期</button>
+        <p class="mb-4">您的账户余额为<br /><span class="text-xl font-bold text-green-400">
+                <?php echo number_format($userFromDatabase->rCoin, 2); ?> RCoin
+            </span></p>
+        <button class="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg transition-colors"
+            onclick="continueSubscribeEmbyUserToLifetimeByRCoin()">续期</button>
     </div>
     {/if}
 
@@ -234,30 +250,18 @@
         <div class="text-center">
             <h3 class="text-xl font-semibold mb-4">设置密码</h3>
             <div class="space-y-4 mb-6">
-                <input
-                        type="password"
-                        id="newPassword"
-                        placeholder="输入新密码"
-                        class="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20"
-                >
-                <input
-                        type="password"
-                        id="confirmPassword"
-                        placeholder="确认新密码"
-                        class="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20"
-                >
+                <input type="password" id="newPassword" placeholder="输入新密码"
+                    class="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20">
+                <input type="password" id="confirmPassword" placeholder="确认新密码"
+                    class="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20">
             </div>
             <div class="flex justify-end space-x-2">
-                <button
-                        onclick="closePasswordDialog()"
-                        class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
-                >
+                <button onclick="closePasswordDialog()"
+                    class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors">
                     取消
                 </button>
-                <button
-                        onclick="savePassword()"
-                        class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-                >
+                <button onclick="savePassword()"
+                    class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors">
                     保存
                 </button>
             </div>
@@ -273,10 +277,8 @@
             <h3 class="text-xl font-semibold mb-4">请使用支付宝扫码支付</h3>
             <div class="bg-white p-4 rounded-lg mb-4 pay-img-here"></div>
             <p class="text-sm text-gray-400 mb-4">请使用支付宝扫描二维码完成支付，支付完成后关闭弹窗刷新即可或前往账单记录查询</p>
-            <button
-                    onclick="closePaymentQR()"
-                    class="px-6 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
-            >
+            <button onclick="closePaymentQR()"
+                class="px-6 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors">
                 关闭
             </button>
         </div>
@@ -320,12 +322,12 @@
         const confirmPassword = document.getElementById('confirmPassword').value;
 
         if (!newPassword || !confirmPassword) {
-            alert('请填写密码');
+            rStatusMessage.warning('请填写密码');
             return;
         }
 
         if (newPassword !== confirmPassword) {
-            alert('两次输入的密码不一致');
+            rStatusMessage.warning('两次输入的密码不一致');
             return;
         }
         startMainLoading();
@@ -374,7 +376,7 @@
             $(item).attr('disabled', 'disabled');
         });
         $.post('/media/server/activateEmbyUserByCode', {
-            code: $('input[name=code]').val()
+            code: $('#activateCode').val()
         }, function (res) {
             if (res.code === 200) {
                 rStatusMessage.success(res.message);
@@ -402,7 +404,7 @@
                     $('.pay-img-here').html('<img src="/api/common/getqrcode?data=' + res.qrcodeUrl + '" alt="支付二维码" class="w-full">');
                     showPaymentQR();
                     if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
-                        window.open("alipays://platformapi/startapp?appId=20000067&url=" + data.qrcodeUrl);
+                        window.open("alipays://platformapi/startapp?appId=20000067&url=" + res.qrcodeUrl);
                     }
                 }
             } else {
@@ -441,7 +443,7 @@
             $(item).attr('disabled', 'disabled');
         });
         $.post('/media/server/continueSubscribeEmbyUserByCode', {
-            code: $('input[name=code]').val()
+            code: $('#renewCode').val()
         }, function (res) {
             if (res.code === 200) {
                 rStatusMessage.success(res.message);
@@ -469,7 +471,7 @@
                     $('.pay-img-here').html('<img src="/api/common/getqrcode?data=' + res.qrcodeUrl + '" alt="支付二维码" class="w-full">');
                     showPaymentQR();
                     if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
-                        window.open("alipays://platformapi/startapp?appId=20000067&url=" + data.qrcodeUrl);
+                        window.open("alipays://platformapi/startapp?appId=20000067&url=" + res.qrcodeUrl);
                     }
                 }
             } else {
@@ -503,18 +505,21 @@
     }
 
     // 监听autoRenew，当autoRenew发生变化时，发送请求
-    document.getElementById('autoRenew').addEventListener('change', function () {
-        $('input[name=auto-renew]').attr('disabled', 'disabled');
-        $.post('/media/server/setAutoRenew', {
-            autoRenew: this.checked?1:0
-        }, function (res) {
-            if (res.code === 200) {
-                rStatusMessage.success(res.message);
-            } else {
-                rStatusMessage.error(res.message);
-            }
-            $('input[name=auto-renew]').removeAttr('disabled');
+    var autoRenewEl = document.getElementById('autoRenew');
+    if (autoRenewEl) {
+        autoRenewEl.addEventListener('change', function () {
+            $('input[name=auto-renew]').attr('disabled', 'disabled');
+            $.post('/media/server/setAutoRenew', {
+                autoRenew: this.checked ? 1 : 0
+            }, function (res) {
+                if (res.code === 200) {
+                    rStatusMessage.success(res.message);
+                } else {
+                    rStatusMessage.error(res.message);
+                }
+                $('input[name=auto-renew]').removeAttr('disabled');
+            });
         });
-    });
+    }
 
 </script>
