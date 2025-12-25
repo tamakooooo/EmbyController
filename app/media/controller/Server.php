@@ -32,9 +32,12 @@ class Server extends BaseController
     private $renewDays = 30;        // 续期时长（天）
     private $renewSeconds = 2592000; // 续期时长（秒），30天 = 2592000秒
 
-    public function __construct()
+    /**
+     * 控制器初始化（ThinkPHP 框架方法）
+     */
+    protected function initialize()
     {
-        parent::__construct();
+        parent::initialize();
         $this->loadRenewConfig();
     }
 
@@ -43,19 +46,23 @@ class Server extends BaseController
      */
     private function loadRenewConfig()
     {
-        $sysConfigModel = new SysConfigModel();
-        
-        // 读取续期费用
-        $renewCostConfig = $sysConfigModel->where('key', 'renewCost')->find();
-        if ($renewCostConfig && $renewCostConfig['value']) {
-            $this->renewCost = intval($renewCostConfig['value']);
-        }
-        
-        // 读取续期天数
-        $renewDaysConfig = $sysConfigModel->where('key', 'renewDays')->find();
-        if ($renewDaysConfig && $renewDaysConfig['value']) {
-            $this->renewDays = intval($renewDaysConfig['value']);
-            $this->renewSeconds = $this->renewDays * 86400;
+        try {
+            $sysConfigModel = new SysConfigModel();
+            
+            // 读取续期费用
+            $renewCostConfig = $sysConfigModel->where('key', 'renewCost')->find();
+            if ($renewCostConfig && $renewCostConfig['value']) {
+                $this->renewCost = intval($renewCostConfig['value']);
+            }
+            
+            // 读取续期天数
+            $renewDaysConfig = $sysConfigModel->where('key', 'renewDays')->find();
+            if ($renewDaysConfig && $renewDaysConfig['value']) {
+                $this->renewDays = intval($renewDaysConfig['value']);
+                $this->renewSeconds = $this->renewDays * 86400;
+            }
+        } catch (\Exception $e) {
+            // 数据库读取失败时使用默认值
         }
     }
 
