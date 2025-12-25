@@ -96,7 +96,7 @@ class Media extends BaseController
                                         sendTGMessageToGroup('用户' . ($user['nickName']??$user['userName']) . '正在使用黑名单客户端: ' . $session['Client'] . '，开始封禁用户');
                                         $embyUserId = $data['User']['Id'];
                                         $url = Config::get('media.urlBase') . 'Users/' . $embyUserId . '/Policy?api_key=' . Config::get('media.apiKey');
-                                        $data = [
+                                        $policyData = [
                                             'IsDisabled' => true
                                         ];
                                         $ch = curl_init($url);
@@ -106,9 +106,11 @@ class Media extends BaseController
                                             'accept: */*',
                                             'Content-Type: application/json'
                                         ]);
-                                        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                                        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($policyData));
                                         $response = curl_exec($ch);
-                                        if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 200 || curl_getinfo($ch, CURLINFO_HTTP_CODE) == 204) {
+                                        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                                        curl_close($ch);
+                                        if ($httpCode == 200 || $httpCode == 204) {
                                             $mediaMaturityTemplate = '您的' . Config::get('app.app_name') . '账号已经禁止使用。';
 
                                             sendTGMessage($user['id'], '您的' . Config::get('app.app_name') . '账号已经禁止使用。');
@@ -229,7 +231,7 @@ class Media extends BaseController
                                         sendTGMessageToGroup('用户' . ($user['nickName']??$user['userName']) . '一周内使用设备数量达到(超过)' . $maxActiveDeviceCount . '个，正在封禁用户');
                                         $embyUserId = $data['User']['Id'];
                                         $url = Config::get('media.urlBase') . 'Users/' . $embyUserId . '/Policy?api_key=' . Config::get('media.apiKey');
-                                        $data = [
+                                        $policyData = [
                                             'IsDisabled' => true
                                         ];
                                         $ch = curl_init($url);
@@ -239,9 +241,11 @@ class Media extends BaseController
                                             'accept: */*',
                                             'Content-Type: application/json'
                                         ]);
-                                        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                                        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($policyData));
                                         $response = curl_exec($ch);
-                                        if (curl_getinfo($ch, CURLINFO_HTTP_CODE) == 200 || curl_getinfo($ch, CURLINFO_HTTP_CODE) == 204) {
+                                        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                                        curl_close($ch);
+                                        if ($httpCode == 200 || $httpCode == 204) {
                                             $mediaMaturityTemplate = '您的' . Config::get('app.app_name') . '账号已经禁止使用。';
                                             sendTGMessage($user['id'], '您的' . Config::get('app.app_name') . '账号已经禁止使用。');
                                             if ($user && $user['email']) {
@@ -407,13 +411,26 @@ class Media extends BaseController
             }
         } catch (\Exception $exception) {
             $message = '第' . $exception->getLine() . '行发生错误：' . $exception->getMessage();
-            // 错误内容
-            $telegram = new Api(Config::get('telegram.botConfig.bots.randallanjie_bot.token'));
-            $telegram->sendMessage([
-                'chat_id' => Config::get('telegram.adminId'),
-                'text' => $message . PHP_EOL . 'get: ' . json_encode(Request::get()) . PHP_EOL . 'post: ' . json_encode(Request::post()),
-                'parse_mode' => 'HTML',
-            ]);
+            // 错误内容 - 只有在配置了有效 token 时才尝试发送
+            $token = Config::get('telegram.botConfig.bots.randallanjie_bot.token');
+            if ($token && $token !== 'notgbot' && $token !== '') {
+                try {
+                    $telegram = new Api($token);
+                    $telegram->sendMessage([
+                        'chat_id' => Config::get('telegram.adminId'),
+                        'text' => $message . PHP_EOL . 'get: ' . json_encode(Request::get()) . PHP_EOL . 'post: ' . json_encode(Request::post()),
+                        'parse_mode' => 'HTML',
+                    ]);
+                } catch (\Exception $e) {
+                    // 发送 TG 消息失败，记录到日志
+                    $logFile = __DIR__ . '/../../../runtime/log/webhook_error.log';
+                    file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] " . $message . " | TG发送失败: " . $e->getMessage() . "\n", FILE_APPEND);
+                }
+            } else {
+                // 没有配置 TG，记录到日志
+                $logFile = __DIR__ . '/../../../runtime/log/webhook_error.log';
+                file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] " . $message . "\n", FILE_APPEND);
+            }
             return false;
         }
     }

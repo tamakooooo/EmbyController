@@ -35,6 +35,7 @@ class Index extends BaseController
             ->field('rc_media_comment.*, rc_media_info.mediaName, rc_media_info.mediaYear, rc_media_info.mediaType, rc_media_info.mediaMainId')
             ->limit(2)
             ->select();
+        $commentList = []; // 初始化变量
         foreach ($latestMediaComment as $key => $comment) {
             if ($comment['userId'] && $comment['userId'] != 0) {
                 $userModel = new UserModel();
@@ -97,6 +98,10 @@ class Index extends BaseController
                         }
                     } catch (\Exception $e) {
                         $status = 0;
+                    } finally {
+                        if (isset($ch)) {
+                            curl_close($ch);
+                        }
                     }
                     $i++;
                     $serverList[] = [
@@ -158,13 +163,21 @@ class Index extends BaseController
             $data = request()->post();
             if (isset($data['mediaId']) && $data['mediaId'] != '') {
                 $embyUserModel = new EmbyUserModel();
-                $embyUser = $embyUserModel->where('userId', Session::get('r_user')['id'])->find();
+                $sessionUser = Session::get('r_user');
+                if ($sessionUser) {
+                    $embyUser = $embyUserModel->where('userId', $sessionUser['id'])->find();
+                } else {
+                    $embyUser = null;
+                }
                 if ($embyUser) {
                     $embyUserId = $embyUser['embyId'];
                 } else {
                     $embyUserId = Config::get('media.adminUserId');
                 }
-                while (1){
+                $maxIterations = 10; // 最大迭代次数
+                $iteration = 0;
+                while ($iteration < $maxIterations) {
+                    $iteration++;
                     $url = Config::get('media.urlBase') . 'Users/' . $embyUserId . '/Items/' . $data['mediaId'] . '?api_key=' . Config::get('media.apiKey');
                     $ch = curl_init($url);
                     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
@@ -173,6 +186,7 @@ class Index extends BaseController
                         'accept: application/json'
                     ]);
                     $metaData = json_decode(curl_exec($ch), true);
+                    curl_close($ch);
 
                     if ($metaData['Type'] == "Episode" && isset($metaData['SeriesId'])) {
                         $data['mediaId'] = $metaData['SeriesId'];
@@ -265,6 +279,10 @@ class Index extends BaseController
         return redirect((string) url('/admin'));
     }
 
+    /**
+     * TODO: 此方法仅供开发调试使用，应在生产环境中移除
+     * @deprecated 包含硬编码的用户ID，不应在生产环境使用
+     */
     public function demo()
     {
 
@@ -279,6 +297,7 @@ class Index extends BaseController
             'accept: application/json'
         ]);
         $movieRecommendations = curl_exec($ch);
+        curl_close($ch);
         echo $movieRecommendations;
         die();
         return view();

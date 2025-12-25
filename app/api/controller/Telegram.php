@@ -278,7 +278,7 @@ class Telegram extends BaseController
                         // 检查是否是指定的工单信息
                         $requestModel = new RequestModel();
                         $request = $requestModel
-                            ->where('requestInfo', 'like', '%' . $message_id . '%')
+                            ->whereRaw("JSON_EXTRACT(requestInfo, '$.messageId') = ?", [$message_id])
                             ->select();
                         if ($request) {
                             foreach ($request as $item) {

@@ -629,7 +629,7 @@ class User extends BaseController
             if ($request->replyUserId) {
                 $user = Session::get('r_user');
                 $requestInfoArray = json_decode(json_encode($request['requestInfo']), true);
-                sendTGMessage($request->replyUserId, "用户 <strong>". ($user->nickNamw??$user->userName)   . "(#" . $user->id . ")" ."</strong> 回复了标题为 <strong>" . $requestInfoArray['title'] . "</strong> 的工单，请及时处理");
+                sendTGMessage($request->replyUserId, "用户 <strong>". ($user->nickName??$user->userName)   . "(#" . $user->id . ")" ."</strong> 回复了标题为 <strong>" . $requestInfoArray['title'] . "</strong> 的工单，请及时处理");
             }
             return json(['code' => 200, 'message' => '回复已提交', 'messageRecord' => json_encode($message)]);
         }

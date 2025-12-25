@@ -392,8 +392,10 @@ function sendStationMessage($id, $message)
     ]);
 }
 
-function getLocation($ip = null)
+function getLocation($ip = null, $retryCount = 0)
 {
+    $maxRetries = 3; // 最大重试次数
+    
     if ($ip == null) {
         $ip = getRealIp();
     }
@@ -408,8 +410,18 @@ function getLocation($ip = null)
 
 
     if (!isset($output['result']) || $output['status'] != 0 || !isset($output['message']) || $output['message'] != 'Success') {
-        sleep(2);
-        return getLocation($ip);
+        if ($retryCount < $maxRetries) {
+            sleep(2);
+            return getLocation($ip, $retryCount + 1);
+        } else {
+            // 达到最大重试次数，返回默认值
+            return [
+                'nation' => '未知',
+                'province' => '未知',
+                'city' => '未知',
+                'district' => '未知'
+            ];
+        }
     } else {
         return $output['result']['ad_info'];
     }

@@ -46,11 +46,11 @@ function loadEnv() {
 try {
     $dotenv = loadEnv();
 
-    // 输出调试信息
-    echo "数据库信息：\n";
-    echo "DB_HOST: " . ($dotenv['DB_HOST'] ?? 'not set') . "\n";
-    echo "DB_NAME: " . ($dotenv['DB_NAME'] ?? 'not set') . "\n";
-    echo "DB_USER: " . ($dotenv['DB_USER'] ?? 'not set') . "\n";
+    // 数据库信息不再输出到控制台（安全考虑）
+    // echo "数据库信息：\n";
+    // echo "DB_HOST: " . ($dotenv['DB_HOST'] ?? 'not set') . "\n";
+    // echo "DB_NAME: " . ($dotenv['DB_NAME'] ?? 'not set') . "\n";
+    // echo "DB_USER: " . ($dotenv['DB_USER'] ?? 'not set') . "\n";
 
     $runInDocker = false;
     if (isset($dotenv['IS_DOCKER'])) {
@@ -310,16 +310,14 @@ $ws->onWorkerStart = function($worker) {
                     file_put_contents($logFile, $message, FILE_APPEND);
                 }
             } else if ($workerId === 2) { // 使用另一个worker处理赌博开奖
-                Timer::add(10, function() {
-                    try {
-                        checkBetResult();
-                    } catch (\Exception $e) {
-                        $logFile = __DIR__ . '/runtime/log/bet_error.log';
-                        $time = date('Y-m-d H:i:s');
-                        $message = "[$time] 定时检查赌博错误: " . $e->getMessage() . "\n";
-                        file_put_contents($logFile, $message, FILE_APPEND);
-                    }
-                });
+                try {
+                    checkBetResult();
+                } catch (\Exception $e) {
+                    $logFile = __DIR__ . '/runtime/log/bet_error.log';
+                    $time = date('Y-m-d H:i:s');
+                    $message = "[$time] 定时检查赌博错误: " . $e->getMessage() . "\n";
+                    file_put_contents($logFile, $message, FILE_APPEND);
+                }
             }
         });
 
@@ -575,6 +573,12 @@ function checkExpiredUsers() {
                         $autoRenewedCount++;
                         sendNotification($user['id'], '您的Emby账号已自动续期');
                         continue;
+                    } else if ($expireTime < $now) {
+                        // 余额不足，账户已过期，禁用账户
+                        $expiredCount++;
+                        disableEmbyAccount($embyUser['embyId']);
+                        sendNotification($embyUser['userId'], '您的Emby账号已过期，自动续期失败（余额不足）');
+                        $processedCount++;
                     }
                 } else {
                     if ($expireTime < $now) {
