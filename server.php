@@ -108,9 +108,48 @@ try {
         ]);
     }
 
+    // 续期配置默认值（从 .env 读取，作为回退）
+    define('RENEW_CONFIG_DEFAULT', [
+        'cost'      => intval($dotenv['RENEW_COST'] ?? 10),        // 续期费用（RCoin），默认10
+        'days'      => intval($dotenv['RENEW_DAYS'] ?? 30),        // 续期时长（天），默认30
+        'seconds'   => intval($dotenv['RENEW_DAYS'] ?? 30) * 86400, // 续期时长（秒），自动根据天数计算
+    ]);
+
 } catch (\Exception $e) {
     die("加载配置错误: " . $e->getMessage() . "\n");
 }
+
+// 获取续期配置（优先从数据库读取）
+function getRenewConfig() {
+    static $config = null;
+    static $lastUpdate = 0;
+    
+    // 每60秒重新从数据库读取配置
+    if ($config === null || (time() - $lastUpdate) > 60) {
+        try {
+            $renewCost = Db::name('sys_config')->where('key', 'renewCost')->value('value');
+            $renewDays = Db::name('sys_config')->where('key', 'renewDays')->value('value');
+            
+            $cost = $renewCost ? intval($renewCost) : RENEW_CONFIG_DEFAULT['cost'];
+            $days = $renewDays ? intval($renewDays) : RENEW_CONFIG_DEFAULT['days'];
+            
+            $config = [
+                'cost'    => $cost,
+                'days'    => $days,
+                'seconds' => $days * 86400,
+            ];
+            $lastUpdate = time();
+        } catch (\Exception $e) {
+            // 数据库读取失败时使用默认配置
+            $config = RENEW_CONFIG_DEFAULT;
+        }
+    }
+    
+    return $config;
+}
+
+// 为了兼容现有代码，保留 RENEW_CONFIG 常量（作为默认值）
+define('RENEW_CONFIG', RENEW_CONFIG_DEFAULT);
 
 // 设置为东八区
 date_default_timezone_set('Asia/Shanghai');
@@ -567,7 +606,7 @@ function checkExpiredUsers() {
 
                 if ($autoRenew == 1) {
                     $user = Db::name('user')->where('id', $embyUser['userId'])->find();
-                    if ($user && $user['rCoin'] >= 10) {
+                    if ($user && $user['rCoin'] >= getRenewConfig()['cost']) {
                         // 执行自动续期
                         processAutoRenewal($embyUser, $user);
                         $autoRenewedCount++;
@@ -664,7 +703,7 @@ function checkAllExpiredUsers() {
                     }
                     if ($autoRenew == 1) {
                         $user = Db::name('user')->where('id', $embyUser['userId'])->find();
-                        if ($user && $user['rCoin'] >= 10) {
+                        if ($user && $user['rCoin'] >= getRenewConfig()['cost']) {
                             // 执行自动续期
                             processAutoRenewal($embyUser, $user);
                             $autoRenewedCount++;
@@ -700,12 +739,13 @@ function processAutoRenewal($embyUser, $user) {
     Db::startTrans();
     try {
         // 扣除用户余额
+        $renewConfig = getRenewConfig();
         Db::name('user')->where('id', $user['id'])->update([
-            'rCoin' => $user['rCoin'] - 10
+            'rCoin' => $user['rCoin'] - $renewConfig['cost']
         ]);
 
         // 更新到期时间
-        $newExpireTime = strtotime($embyUser['activateTo']) + 2592000; // 30天
+        $newExpireTime = strtotime($embyUser['activateTo']) + $renewConfig['seconds'];
         Db::name('emby_user')->where('id', $embyUser['id'])->update([
             'activateTo' => date('Y-m-d H:i:s', $newExpireTime)
         ]);
@@ -714,7 +754,7 @@ function processAutoRenewal($embyUser, $user) {
         Db::name('finance_record')->insert([
             'userId' => $user['id'],
             'action' => 3,
-            'count' => 10,
+            'count' => $renewConfig['cost'],
             'recordInfo' => json_encode([
                 'message' => '使用余额自动续期Emby账号'
             ]),

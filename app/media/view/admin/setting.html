@@ -7,67 +7,63 @@
         <div class="space-y-4">
             <div class="space-y-2">
                 <label class="block text-white-400 mb-1">系统通知</label>
-                <textarea name="sysnotificiations"
-                          rows="10"
-                          class="w-full bg-white/10 rounded-lg px-4 py-2 font-mono text-sm">{$settings.sysnotificiations??''}</textarea>
+                <textarea name="sysnotificiations" rows="10"
+                    class="w-full bg-white/10 rounded-lg px-4 py-2 font-mono text-sm">{$settings.sysnotificiations??''}</textarea>
                 <p class="text-sm text-gray-400">显示在仪表盘中的通知，可为HTML</p>
             </div>
 
             <div class="space-y-2">
                 <label class="block text-white-400 mb-1">可注册人数</label>
-                <input type="number"
-                       name="avableRegisterCount"
-                       value="{$settings.avableRegisterCount|default=0}"
-                       class="w-full bg-white/10 rounded-lg px-4 py-2">
+                <input type="number" name="avableRegisterCount" value="{$settings.avableRegisterCount|default=0}"
+                    class="w-full bg-white/10 rounded-lg px-4 py-2">
                 <p class="text-sm text-gray-400">-1表示无限制，0表示禁止注册</p>
             </div>
 
             <div class="space-y-2">
                 <label class="block text-white-400 mb-1">充值到账比</label>
-                <input type="number"
-                       name="chargeRate"
-                       value="{$settings.chargeRate|default=1}"
-                       class="w-full bg-white/10 rounded-lg px-4 py-2">
+                <input type="number" name="chargeRate" value="{$settings.chargeRate|default=1}"
+                    class="w-full bg-white/10 rounded-lg px-4 py-2">
                 <p class="text-sm text-gray-400">比率为1即为充值1元到账1R币</p>
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-white-400 mb-1">续期费用</label>
+                <input type="number" name="renewCost" value="{$settings.renewCost|default=10}" min="1" step="1"
+                    class="w-full bg-white/10 rounded-lg px-4 py-2">
+                <p class="text-sm text-gray-400">每次续期扣除的R币数量，默认10</p>
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-white-400 mb-1">续期时长（天）</label>
+                <input type="number" name="renewDays" value="{$settings.renewDays|default=30}" min="1" step="1"
+                    class="w-full bg-white/10 rounded-lg px-4 py-2">
+                <p class="text-sm text-gray-400">每次续期增加的天数，默认30天</p>
             </div>
 
             <div class="space-y-2">
                 <label class="block text-white-400 mb-1">签到金额范围</label>
                 <div class="flex items-center space-x-4">
-                    <input type="number"
-                           id="signInMinAmount"
-                           name="signInMinAmount"
-                           value="{$settings.signInMinAmount|default=0}"
-                           min="0"
-                           max="10"
-                           step="0.01"
-                           onchange="validateAmount(this)"
-                           class="w-24 bg-white/10 rounded-lg px-4 py-2"
-                           oninput="updateSignInRange()">
+                    <input type="number" id="signInMinAmount" name="signInMinAmount"
+                        value="{$settings.signInMinAmount|default=0}" min="0" max="10" step="0.01"
+                        onchange="validateAmount(this)" class="w-24 bg-white/10 rounded-lg px-4 py-2"
+                        oninput="updateSignInRange()">
                     <span class="text-gray-400">至</span>
-                    <input type="number"
-                           id="signInMaxAmount"
-                           name="signInMaxAmount"
-                           value="{$settings.signInMaxAmount|default=0}"
-                           min="0"
-                           max="10"
-                           step="0.01"
-                           onchange="validateAmount(this)"
-                           class="w-24 bg-white/10 rounded-lg px-4 py-2"
-                           oninput="updateSignInRange()">
+                    <input type="number" id="signInMaxAmount" name="signInMaxAmount"
+                        value="{$settings.signInMaxAmount|default=0}" min="0" max="10" step="0.01"
+                        onchange="validateAmount(this)" class="w-24 bg-white/10 rounded-lg px-4 py-2"
+                        oninput="updateSignInRange()">
                     <span class="text-gray-400">R币</span>
                 </div>
                 <div class="relative pt-4 w-full">
                     <div class="h-2 bg-gray-700 rounded-lg">
-                        <div id="signInRangeBar"
-                             class="absolute h-2 bg-blue-500 rounded-lg"
-                             style="left: 0%; width: 100%;"></div>
+                        <div id="signInRangeBar" class="absolute h-2 bg-blue-500 rounded-lg"
+                            style="left: 0%; width: 100%;"></div>
                         <div id="signInMinHandle"
-                             class="absolute w-4 h-4 bg-blue-500 rounded-full -mt-1 -ml-2 cursor-grab active:cursor-grabbing"
-                             onmousedown="startDragging('min', event)"></div>
+                            class="absolute w-4 h-4 bg-blue-500 rounded-full -mt-1 -ml-2 cursor-grab active:cursor-grabbing"
+                            onmousedown="startDragging('min', event)"></div>
                         <div id="signInMaxHandle"
-                             class="absolute w-4 h-4 bg-blue-500 rounded-full -mt-1 -ml-2 cursor-grab active:cursor-grabbing"
-                             onmousedown="startDragging('max', event)"></div>
+                            class="absolute w-4 h-4 bg-blue-500 rounded-full -mt-1 -ml-2 cursor-grab active:cursor-grabbing"
+                            onmousedown="startDragging('max', event)"></div>
                     </div>
                 </div>
                 <p class="text-sm text-gray-400">设置每日签到可获得的R币范围，两个值都为0时关闭签到功能</p>
@@ -95,10 +91,8 @@
                     </p>
                 </div>
                 <div class="flex space-x-2">
-                    <input type="text" 
-                           id="clientListInput"
-                           placeholder="输入客户端名称后按回车添加" 
-                           class="flex-1 bg-white/10 rounded-lg px-4 py-2">
+                    <input type="text" id="clientListInput" placeholder="输入客户端名称后按回车添加"
+                        class="flex-1 bg-white/10 rounded-lg px-4 py-2">
                 </div>
                 <div id="clientListTags" class="flex flex-wrap gap-2 mt-2">
                     <!-- 标签将在这里动态生成 -->
@@ -116,10 +110,8 @@
                     </p>
                 </div>
                 <div class="flex space-x-2">
-                    <input type="text" 
-                           id="clientBlackListInput"
-                           placeholder="输入客户端名称后按回车添加" 
-                           class="flex-1 bg-white/10 rounded-lg px-4 py-2">
+                    <input type="text" id="clientBlackListInput" placeholder="输入客户端名称后按回车添加"
+                        class="flex-1 bg-white/10 rounded-lg px-4 py-2">
                 </div>
                 <div id="clientBlackListTags" class="flex flex-wrap gap-2 mt-2">
                     <!-- 标签将在这里动态生成 -->
@@ -130,10 +122,8 @@
 
             <div class="space-y-2">
                 <label class="block text-white-400 mb-1">7日内最大活跃设备数</label>
-                <input type="number"
-                       name="maxActiveDeviceCount"
-                       value="{$settings.maxActiveDeviceCount|default=0}"
-                       class="w-full bg-white/10 rounded-lg px-4 py-2">
+                <input type="number" name="maxActiveDeviceCount" value="{$settings.maxActiveDeviceCount|default=0}"
+                    class="w-full bg-white/10 rounded-lg px-4 py-2">
                 <p class="text-sm text-gray-400">0表示不限制</p>
             </div>
         </div>
@@ -142,7 +132,7 @@
     <!-- Telegram机器人设置 -->
     <div class="space-y-4 mb-4">
         <h2 class="text-xl font-semibold">Telegram机器人设置</h2>
-        
+
         <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 mb-6">
             <p class="text-yellow-200">
                 * 配置机器人的自动回复规则。支持多条规则，按优先级从高到低排序。每条规则可以设置匹配模式、回复内容和自动删除时间。可以拖动规则调整优先级顺序。
@@ -156,9 +146,8 @@
             </div>
 
             <!-- 添加规则按钮 -->
-            <button type="button" 
-                    onclick="addTelegramRule()"
-                    class="px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30">
+            <button type="button" onclick="addTelegramRule()"
+                class="px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30">
                 添加规则
             </button>
         </div>
@@ -170,25 +159,22 @@
         <div class="space-y-4">
             <div class="space-y-2">
                 <label class="block text-white-400 mb-1">找回密码邮件模板</label>
-                <textarea name="findPasswordTemplate" 
-                          rows="10" 
-                          class="w-full bg-white/10 rounded-lg px-4 py-2 font-mono text-sm">{empty name="settings.findPasswordTemplate"}您的找回密码链接是：<a href="&lcub;Url&rcub;">&lcub;Url&rcub;</a>{else/}{$settings.findPasswordTemplate}{/empty}</textarea>
+                <textarea name="findPasswordTemplate" rows="10"
+                    class="w-full bg-white/10 rounded-lg px-4 py-2 font-mono text-sm">{empty name="settings.findPasswordTemplate"}您的找回密码链接是：<a href="&lcub;Url&rcub;">&lcub;Url&rcub;</a>{else/}{$settings.findPasswordTemplate}{/empty}</textarea>
                 <p class="text-sm text-gray-400">可用变量：{Email} - 用户邮箱，&lcub;Url&rcub; - 重置密码链接，{SiteUrl} - 站点地址</p>
             </div>
-            
+
             <div class="space-y-2">
                 <label class="block text-white-400 mb-1">注册验证码邮件模板</label>
-                <textarea name="verifyCodeTemplate" 
-                          rows="10" 
-                          class="w-full bg-white/10 rounded-lg px-4 py-2 font-mono text-sm">{empty name="settings.verifyCodeTemplate"}您的验证码是：{Code}{else/}{$settings.verifyCodeTemplate}{/empty}</textarea>
+                <textarea name="verifyCodeTemplate" rows="10"
+                    class="w-full bg-white/10 rounded-lg px-4 py-2 font-mono text-sm">{empty name="settings.verifyCodeTemplate"}您的验证码是：{Code}{else/}{$settings.verifyCodeTemplate}{/empty}</textarea>
                 <p class="text-sm text-gray-400">可用变量：{Email} - 用户邮箱，{Code} - 验证码，{SiteUrl} - 站点地址</p>
             </div>
 
             <div class="space-y-2">
                 <label class="block text-white-400 mb-1">通知邮件模板</label>
-                <textarea name="notificationTemplate" 
-                          rows="10" 
-                          class="w-full bg-white/10 rounded-lg px-4 py-2 font-mono text-sm">{empty name="settings.notificationTemplate"}您有一条新消息：{Message}{else/}{$settings.notificationTemplate}{/empty}</textarea>
+                <textarea name="notificationTemplate" rows="10"
+                    class="w-full bg-white/10 rounded-lg px-4 py-2 font-mono text-sm">{empty name="settings.notificationTemplate"}您有一条新消息：{Message}{else/}{$settings.notificationTemplate}{/empty}</textarea>
                 <p class="text-sm text-gray-400">可用变量：{Email} - 用户邮箱，{SiteUrl} - 站点地址，{Message} - 消息内容</p>
             </div>
         </div>
@@ -205,11 +191,10 @@
                         * 支持HTML代码，将显示在用户注册和隐私政策页面。
                     </p>
                 </div>
-                <textarea name="privacyPolicy" 
-                          rows="15" 
-                          class="w-full bg-white/10 rounded-lg px-4 py-2 font-mono text-sm">{$settings.privacyPolicy??''}</textarea>
+                <textarea name="privacyPolicy" rows="15"
+                    class="w-full bg-white/10 rounded-lg px-4 py-2 font-mono text-sm">{$settings.privacyPolicy??''}</textarea>
             </div>
-            
+
             <div class="space-y-2">
                 <label class="block text-white-400 mb-1">用户协议</label>
                 <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 mb-6">
@@ -217,159 +202,159 @@
                         * 支持HTML代码，将显示在用户注册和用户协议页面。
                     </p>
                 </div>
-                <textarea name="userAgreement" 
-                          rows="15" 
-                          class="w-full bg-white/10 rounded-lg px-4 py-2 font-mono text-sm">{$settings.userAgreement??''}</textarea>
+                <textarea name="userAgreement" rows="15"
+                    class="w-full bg-white/10 rounded-lg px-4 py-2 font-mono text-sm">{$settings.userAgreement??''}</textarea>
             </div>
         </div>
     </div>
 
     <!-- 保存按钮 -->
     <div class="flex justify-end">
-        <button type="button"
-                onclick="saveSettings()"
-                class="px-6 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30">
+        <button type="button" onclick="saveSettings()"
+            class="px-6 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30">
             保存更改
         </button>
     </div>
 </div>
 
 <script>
-// 开始拖动
-function startDragging(handle, event) {
-    isDragging = true;
-    currentHandle = handle;
-    const handleElement = event.target;
-    startX = event.clientX;
-    startLeft = parseFloat(handleElement.style.left || 0);
-    
-    document.addEventListener('mousemove', handleDragging);
-    document.addEventListener('mouseup', stopDragging);
-    
-    // 防止拖动时选中文本
-    event.preventDefault();
-}
+    // 开始拖动
+    function startDragging(handle, event) {
+        isDragging = true;
+        currentHandle = handle;
+        const handleElement = event.target;
+        startX = event.clientX;
+        startLeft = parseFloat(handleElement.style.left || 0);
 
-// 处理拖动
-function handleDragging(event) {
-    if (!isDragging) return;
-    
-    const slider = document.querySelector('.h-2.bg-gray-700');
-    const sliderRect = slider.getBoundingClientRect();
-    const sliderWidth = sliderRect.width;
-    
-    // 计算新位置
-    const deltaX = event.clientX - startX;
-    let newLeft = startLeft + (deltaX / sliderWidth * 100);
-    newLeft = Math.max(0, Math.min(100, newLeft));
-    
-    // 计算对应的值
-    const value = (newLeft / 100 * 10).toFixed(2);
-    
-    // 获取当前的最小值和最大值
-    let minValue = parseFloat($('#signInMinAmount').val());
-    let maxValue = parseFloat($('#signInMaxAmount').val());
-    const newValue = parseFloat(value);
+        document.addEventListener('mousemove', handleDragging);
+        document.addEventListener('mouseup', stopDragging);
 
-    if (currentHandle === 'min') {
-        if (newValue > maxValue) {
-            // 如果最小值超过最大值，交换两个值
-            $('#signInMinAmount').val(maxValue);
-            $('#signInMaxAmount').val(value);
-        } else {
-            $('#signInMinAmount').val(value);
-        }
-    } else {
-        if (newValue < minValue) {
-            // 如果最大值小于最小值，交换两个值
-            $('#signInMaxAmount').val(minValue);
-            $('#signInMinAmount').val(value);
-        } else {
-            $('#signInMaxAmount').val(value);
-        }
-    }
-    updateSignInRange();
-}
-
-// 停止拖动
-function stopDragging() {
-    isDragging = false;
-    currentHandle = null;
-    document.removeEventListener('mousemove', handleDragging);
-    document.removeEventListener('mouseup', stopDragging);
-}
-
-function saveSettings() {
-    const formData = {
-        avableRegisterCount: $('input[name="avableRegisterCount"]').val(),
-        findPasswordTemplate: $('textarea[name="findPasswordTemplate"]').val(),
-        verifyCodeTemplate: $('textarea[name="verifyCodeTemplate"]').val(),
-        notificationTemplate: $('textarea[name="notificationTemplate"]').val(),
-        sysnotificiations: $('textarea[name="sysnotificiations"]').val(),
-        chargeRate: $('input[name="chargeRate"]').val(),
-        clientList: $('#clientListValue').val(),
-        clientBlackList: $('#clientBlackListValue').val(),
-        signInMinAmount: $('#signInMinAmount').val(),
-        signInMaxAmount: $('#signInMaxAmount').val(),
-        maxActiveDeviceCount: $('input[name="maxActiveDeviceCount"]').val(),
-        telegramRules: JSON.stringify(collectTelegramRules()),
-        privacyPolicy: $('textarea[name="privacyPolicy"]').val(),
-        userAgreement: $('textarea[name="userAgreement"]').val()
-    };
-
-    $.post("{:url('admin/setting', [])}", formData, function(res) {
-        if(res.code == 200) {
-            rStatusMessage.success(res.message);
-        } else {
-            rStatusMessage.error(res.message);
-        }
-    });
-}
-
-// 验证输入值在有效范围内
-function validateAmount(input) {
-    let value = parseFloat(input.value);
-    if (isNaN(value)) value = 0;
-    value = Math.min(Math.max(value, 0), 10);
-    input.value = value.toFixed(2);
-    updateSignInRange();
-}
-
-// 更新签到范围滑块显示
-function updateSignInRange() {
-    const minAmount = parseFloat($('#signInMinAmount').val()) || 0;
-    const maxAmount = parseFloat($('#signInMaxAmount').val()) || 0;
-    
-    // 计算百分比位置
-    const leftPercent = (minAmount / 10) * 100;
-    const rightPercent = (maxAmount / 10) * 100;
-    
-    // 更新滑块显示
-    $('#signInRangeBar').css({
-        'left': leftPercent + '%',
-        'width': (rightPercent - leftPercent) + '%'
-    });
-    
-    // 更新手柄位置
-    $('#signInMinHandle').css('left', leftPercent + '%');
-    $('#signInMaxHandle').css('left', rightPercent + '%');
-}
-
-// 标签管理功能
-function initTagManager(inputId, tagsContainerId, hiddenInputId, initialTags = []) {
-    const input = document.getElementById(inputId);
-    const tagsContainer = document.getElementById(tagsContainerId);
-    const hiddenInput = document.getElementById(hiddenInputId);
-
-    function updateHiddenInput() {
-        const tags = Array.from(tagsContainer.children).map(tag => tag.getAttribute('data-value'));
-        hiddenInput.value = JSON.stringify(tags);
+        // 防止拖动时选中文本
+        event.preventDefault();
     }
 
-    function createTag(value) {
-        const tag = document.createElement('span');
-        tag.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-500/20 text-blue-400';
-        tag.innerHTML = `
+    // 处理拖动
+    function handleDragging(event) {
+        if (!isDragging) return;
+
+        const slider = document.querySelector('.h-2.bg-gray-700');
+        const sliderRect = slider.getBoundingClientRect();
+        const sliderWidth = sliderRect.width;
+
+        // 计算新位置
+        const deltaX = event.clientX - startX;
+        let newLeft = startLeft + (deltaX / sliderWidth * 100);
+        newLeft = Math.max(0, Math.min(100, newLeft));
+
+        // 计算对应的值
+        const value = (newLeft / 100 * 10).toFixed(2);
+
+        // 获取当前的最小值和最大值
+        let minValue = parseFloat($('#signInMinAmount').val());
+        let maxValue = parseFloat($('#signInMaxAmount').val());
+        const newValue = parseFloat(value);
+
+        if (currentHandle === 'min') {
+            if (newValue > maxValue) {
+                // 如果最小值超过最大值，交换两个值
+                $('#signInMinAmount').val(maxValue);
+                $('#signInMaxAmount').val(value);
+            } else {
+                $('#signInMinAmount').val(value);
+            }
+        } else {
+            if (newValue < minValue) {
+                // 如果最大值小于最小值，交换两个值
+                $('#signInMaxAmount').val(minValue);
+                $('#signInMinAmount').val(value);
+            } else {
+                $('#signInMaxAmount').val(value);
+            }
+        }
+        updateSignInRange();
+    }
+
+    // 停止拖动
+    function stopDragging() {
+        isDragging = false;
+        currentHandle = null;
+        document.removeEventListener('mousemove', handleDragging);
+        document.removeEventListener('mouseup', stopDragging);
+    }
+
+    function saveSettings() {
+        const formData = {
+            avableRegisterCount: $('input[name="avableRegisterCount"]').val(),
+            findPasswordTemplate: $('textarea[name="findPasswordTemplate"]').val(),
+            verifyCodeTemplate: $('textarea[name="verifyCodeTemplate"]').val(),
+            notificationTemplate: $('textarea[name="notificationTemplate"]').val(),
+            sysnotificiations: $('textarea[name="sysnotificiations"]').val(),
+            chargeRate: $('input[name="chargeRate"]').val(),
+            renewCost: $('input[name="renewCost"]').val(),
+            renewDays: $('input[name="renewDays"]').val(),
+            clientList: $('#clientListValue').val(),
+            clientBlackList: $('#clientBlackListValue').val(),
+            signInMinAmount: $('#signInMinAmount').val(),
+            signInMaxAmount: $('#signInMaxAmount').val(),
+            maxActiveDeviceCount: $('input[name="maxActiveDeviceCount"]').val(),
+            telegramRules: JSON.stringify(collectTelegramRules()),
+            privacyPolicy: $('textarea[name="privacyPolicy"]').val(),
+            userAgreement: $('textarea[name="userAgreement"]').val()
+        };
+
+        $.post("{:url('admin/setting', [])}", formData, function (res) {
+            if (res.code == 200) {
+                rStatusMessage.success(res.message);
+            } else {
+                rStatusMessage.error(res.message);
+            }
+        });
+    }
+
+    // 验证输入值在有效范围内
+    function validateAmount(input) {
+        let value = parseFloat(input.value);
+        if (isNaN(value)) value = 0;
+        value = Math.min(Math.max(value, 0), 10);
+        input.value = value.toFixed(2);
+        updateSignInRange();
+    }
+
+    // 更新签到范围滑块显示
+    function updateSignInRange() {
+        const minAmount = parseFloat($('#signInMinAmount').val()) || 0;
+        const maxAmount = parseFloat($('#signInMaxAmount').val()) || 0;
+
+        // 计算百分比位置
+        const leftPercent = (minAmount / 10) * 100;
+        const rightPercent = (maxAmount / 10) * 100;
+
+        // 更新滑块显示
+        $('#signInRangeBar').css({
+            'left': leftPercent + '%',
+            'width': (rightPercent - leftPercent) + '%'
+        });
+
+        // 更新手柄位置
+        $('#signInMinHandle').css('left', leftPercent + '%');
+        $('#signInMaxHandle').css('left', rightPercent + '%');
+    }
+
+    // 标签管理功能
+    function initTagManager(inputId, tagsContainerId, hiddenInputId, initialTags = []) {
+        const input = document.getElementById(inputId);
+        const tagsContainer = document.getElementById(tagsContainerId);
+        const hiddenInput = document.getElementById(hiddenInputId);
+
+        function updateHiddenInput() {
+            const tags = Array.from(tagsContainer.children).map(tag => tag.getAttribute('data-value'));
+            hiddenInput.value = JSON.stringify(tags);
+        }
+
+        function createTag(value) {
+            const tag = document.createElement('span');
+            tag.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-500/20 text-blue-400';
+            tag.innerHTML = `
             ${value}
             <button type="button" class="ml-2 focus:outline-none hover:text-blue-300">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -377,45 +362,46 @@ function initTagManager(inputId, tagsContainerId, hiddenInputId, initialTags = [
                 </svg>
             </button>
         `;
-        tag.setAttribute('data-value', value);
-        
-        tag.querySelector('button').addEventListener('click', () => {
-            tag.remove();
+            tag.setAttribute('data-value', value);
+
+            tag.querySelector('button').addEventListener('click', () => {
+                tag.remove();
+                updateHiddenInput();
+            });
+
+            tagsContainer.appendChild(tag);
             updateHiddenInput();
+        }
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && input.value.trim()) {
+                e.preventDefault();
+                createTag(input.value.trim());
+                input.value = '';
+            }
         });
-        
-        tagsContainer.appendChild(tag);
-        updateHiddenInput();
+
+        // 初始化已有的标签
+        if (initialTags && initialTags.length) {
+            initialTags.forEach(tag => createTag(tag));
+        }
     }
 
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && input.value.trim()) {
-            e.preventDefault();
-            createTag(input.value.trim());
-            input.value = '';
-        }
-    });
-
-    // 初始化已有的标签
-    if (initialTags && initialTags.length) {
-        initialTags.forEach(tag => createTag(tag));
+    // 修改初始化Telegram规则函数
+    function initTelegramRules() {
+        let rules = [];
+        try {
+            if ({: json_encode($settings['telegramRules'] ?? "")}) {
+            rules = JSON.parse({: json_encode($settings['telegramRules'] ?? "[]")
+        });
     }
-}
-
-// 修改初始化Telegram规则函数
-function initTelegramRules() {
-    let rules = [];
-    try {
-        if ({:json_encode($settings['telegramRules'] ?? "")}) {
-            rules = JSON.parse({:json_encode($settings['telegramRules'] ?? "[]")});
-        }
     } catch (e) {
         console.error('Error parsing telegram rules:', e);
     }
-    
+
     const container = document.getElementById('telegramRulesList');
     container.innerHTML = '';
-    
+
     if (rules && rules.length > 0) {
         // 构建所有规则的HTML
         const rulesHtml = rules
@@ -447,10 +433,10 @@ function initTelegramRules() {
                 `;
             })
             .join('');
-            
+
         // 一次性插入所有规则
         container.innerHTML = rulesHtml;
-        
+
         // 为所有规则添加事件监听器
         container.querySelectorAll('[draggable="true"]').forEach(ruleElement => {
             const matchTypeSelect = ruleElement.querySelector('[name="matchType"]');
@@ -463,48 +449,48 @@ function initTelegramRules() {
     }
 }
 
-// 添加辅助函数用于获取匹配类型文本
-function getMatchTypeText(matchType) {
-    switch(matchType) {
-        case 'contains':
-            return '包含关键词';
-        case 'equals':
-            return '完全匹配';
-        case 'regex':
-            return '正则表达式';
-        default:
-            return '包含关键词';
+    // 添加辅助函数用于获取匹配类型文本
+    function getMatchTypeText(matchType) {
+        switch (matchType) {
+            case 'contains':
+                return '包含关键词';
+            case 'equals':
+                return '完全匹配';
+            case 'regex':
+                return '正则表达式';
+            default:
+                return '包含关键词';
+        }
     }
-}
 
-// 添加更新规则标题的函数
-function updateRuleTitle(ruleId) {
-    const ruleElement = document.getElementById(ruleId);
-    const matchType = ruleElement.querySelector('[name="matchType"]').value;
-    const keyword = ruleElement.querySelector('[name="keyword"]').value.trim();
-    const title = ruleElement.querySelector('.rule-title');
-    
-    let matchTypeText = '';
-    switch(matchType) {
-        case 'contains':
-            matchTypeText = '包含关键词';
-            break;
-        case 'equals':
-            matchTypeText = '完全匹配';
-            break;
-        case 'regex':
-            matchTypeText = '正则表达式';
-            break;
+    // 添加更新规则标题的函数
+    function updateRuleTitle(ruleId) {
+        const ruleElement = document.getElementById(ruleId);
+        const matchType = ruleElement.querySelector('[name="matchType"]').value;
+        const keyword = ruleElement.querySelector('[name="keyword"]').value.trim();
+        const title = ruleElement.querySelector('.rule-title');
+
+        let matchTypeText = '';
+        switch (matchType) {
+            case 'contains':
+                matchTypeText = '包含关键词';
+                break;
+            case 'equals':
+                matchTypeText = '完全匹配';
+                break;
+            case 'regex':
+                matchTypeText = '正则表达式';
+                break;
+        }
+
+        title.textContent = keyword ?
+            `规则：${keyword}（${matchTypeText}）` :
+            '规则配置';
     }
-    
-    title.textContent = keyword ? 
-        `规则：${keyword}（${matchTypeText}）` : 
-        '规则配置';
-}
 
-// 添加生成规则配置HTML的辅助函数
-function generateRuleConfigHtml(rule, ruleId) {
-    return `
+    // 添加生成规则配置HTML的辅助函数
+    function generateRuleConfigHtml(rule, ruleId) {
+        return `
         <!-- 匹配模式 -->
         <div class="space-y-2">
             <label class="block text-white-400">匹配模式</label>
@@ -564,11 +550,11 @@ function generateRuleConfigHtml(rule, ruleId) {
             </div>
         </div>
     `;
-}
+    }
 
-// 生成等级规则HTML
-function generateLevelRulesHtml(levelRules) {
-    return levelRules.map((rule, index) => `
+    // 生成等级规则HTML
+    function generateLevelRulesHtml(levelRules) {
+        return levelRules.map((rule, index) => `
         <div class="flex items-center space-x-2">
             <input type="number" 
                    class="w-20 bg-white/10 rounded-lg px-2 py-1"
@@ -593,226 +579,226 @@ function generateLevelRulesHtml(levelRules) {
             </button>
         </div>
     `).join('');
-}
-
-// 添加等级规则
-function addLevelRule(ruleId) {
-    const container = document.getElementById(`${ruleId}_levelRules`);
-    const levelRuleHtml = generateLevelRulesHtml([{
-        minLevel: '',
-        maxLevel: '',
-        reply: ''
-    }]);
-    container.insertAdjacentHTML('beforeend', levelRuleHtml);
-}
-
-// 删除规则
-function removeTelegramRule(ruleId) {
-    document.getElementById(ruleId).remove();
-}
-
-// 切换正则输入提示
-function toggleRegexInput(ruleId) {
-    const ruleElement = document.getElementById(ruleId);
-    const matchType = ruleElement.querySelector('[name="matchType"]').value;
-    const keywordInput = ruleElement.querySelector('[name="keyword"]');
-    
-    if (matchType === 'regex') {
-        keywordInput.placeholder = '输入正则表达式，如: ^/start.*$';
-    } else if (matchType === 'equals') {
-        keywordInput.placeholder = '输入需要完全匹配的文本';
-    } else {
-        keywordInput.placeholder = '输入关键词';
     }
-}
 
-// 修改拖拽相关函数
-function initDragAndDrop() {
-    const container = document.getElementById('telegramRulesList');
-    
-    // 阻止默认的拖拽行为
-    document.addEventListener('dragstart', (e) => {
-        if (!e.target.closest('#telegramRulesList')) {
+    // 添加等级规则
+    function addLevelRule(ruleId) {
+        const container = document.getElementById(`${ruleId}_levelRules`);
+        const levelRuleHtml = generateLevelRulesHtml([{
+            minLevel: '',
+            maxLevel: '',
+            reply: ''
+        }]);
+        container.insertAdjacentHTML('beforeend', levelRuleHtml);
+    }
+
+    // 删除规则
+    function removeTelegramRule(ruleId) {
+        document.getElementById(ruleId).remove();
+    }
+
+    // 切换正则输入提示
+    function toggleRegexInput(ruleId) {
+        const ruleElement = document.getElementById(ruleId);
+        const matchType = ruleElement.querySelector('[name="matchType"]').value;
+        const keywordInput = ruleElement.querySelector('[name="keyword"]');
+
+        if (matchType === 'regex') {
+            keywordInput.placeholder = '输入正则表达式，如: ^/start.*$';
+        } else if (matchType === 'equals') {
+            keywordInput.placeholder = '输入需要完全匹配的文本';
+        } else {
+            keywordInput.placeholder = '输入关键词';
+        }
+    }
+
+    // 修改拖拽相关函数
+    function initDragAndDrop() {
+        const container = document.getElementById('telegramRulesList');
+
+        // 阻止默认的拖拽行为
+        document.addEventListener('dragstart', (e) => {
+            if (!e.target.closest('#telegramRulesList')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // 使用事件委托处理拖拽事件
+        container.addEventListener('mousedown', handleDragPrep);
+        container.addEventListener('dragstart', handleDragStart);
+        container.addEventListener('dragend', handleDragEnd);
+        container.addEventListener('dragover', handleDragOver);
+        container.addEventListener('drop', handleDrop);
+    }
+
+    // 添加拖动准备函数
+    function handleDragPrep(e) {
+        const dragItem = e.target.closest('[draggable="true"]');
+        if (!dragItem) return;
+
+        // 确保所有规则标题都已正确更新
+        document.querySelectorAll('#telegramRulesList > div').forEach(rule => {
+            const ruleId = rule.id;
+            updateRuleTitle(ruleId);
+        });
+    }
+
+    function handleDragStart(e) {
+        const dragItem = e.target.closest('[draggable="true"]');
+        if (!dragItem) {
             e.preventDefault();
-            return false;
+            return;
         }
-    });
 
-    // 使用事件委托处理拖拽事件
-    container.addEventListener('mousedown', handleDragPrep);
-    container.addEventListener('dragstart', handleDragStart);
-    container.addEventListener('dragend', handleDragEnd);
-    container.addEventListener('dragover', handleDragOver);
-    container.addEventListener('drop', handleDrop);
-}
+        // 记录拖动开始时元素的位置
+        const dragItemRect = dragItem.getBoundingClientRect();
+        const initialTopOffset = dragItemRect.top;
 
-// 添加拖动准备函数
-function handleDragPrep(e) {
-    const dragItem = e.target.closest('[draggable="true"]');
-    if (!dragItem) return;
+        // 设置拖动的数据
+        e.dataTransfer.setData('text/plain', dragItem.id);
+        e.dataTransfer.effectAllowed = 'move';
 
-    // 确保所有规则标题都已正确更新
-    document.querySelectorAll('#telegramRulesList > div').forEach(rule => {
-        const ruleId = rule.id;
-        updateRuleTitle(ruleId);
-    });
-}
+        // 创建一个克隆元素作为自定义预览
+        const clone = dragItem.cloneNode(true);
+        clone.style.width = dragItem.offsetWidth + 'px';
 
-function handleDragStart(e) {
-    const dragItem = e.target.closest('[draggable="true"]');
-    if (!dragItem) {
-        e.preventDefault();
-        return;
-    }
-
-    // 记录拖动开始时元素的位置
-    const dragItemRect = dragItem.getBoundingClientRect();
-    const initialTopOffset = dragItemRect.top;
-
-    // 设置拖动的数据
-    e.dataTransfer.setData('text/plain', dragItem.id);
-    e.dataTransfer.effectAllowed = 'move';
-    
-    // 创建一个克隆元素作为自定义预览
-    const clone = dragItem.cloneNode(true);
-    clone.style.width = dragItem.offsetWidth + 'px';
-    
-    // 隐藏克隆元素中的内容区域
-    const content = clone.querySelector('.rule-content');
-    if (content) {
-        content.style.display = 'none';
-    }
-    
-    // 设置克隆元素的样式
-    clone.style.position = 'absolute';
-    clone.style.left = '-9999px';
-    clone.style.top = '-9999px';
-    clone.style.opacity = '0.8';
-    clone.style.pointerEvents = 'none';
-    clone.style.height = 'auto';
-    clone.style.backgroundColor = 'rgba(30, 41, 59, 0.8)';
-    clone.style.border = '2px solid rgba(59, 130, 246, 0.5)';
-    
-    // 添加克隆元素到文档中
-    document.body.appendChild(clone);
-    
-    // 设置自定义拖动图像
-    e.dataTransfer.setDragImage(clone, 0, 0);
-    
-    // 添加拖动样式
-    dragItem.classList.add('opacity-50');
-    
-    // 立即隐藏所有规则的内容并调整滚动位置
-    requestAnimationFrame(() => {
-        document.querySelectorAll('#telegramRulesList > div').forEach(rule => {
-            const content = rule.querySelector('.rule-content');
-            if (content) {
-                content.style.display = 'none';
-            }
-        });
-
-        // 获取收缩后的位置
-        const newRect = dragItem.getBoundingClientRect();
-        const scrollDiff = newRect.top - initialTopOffset;
-        
-        // 调整滚动位置以保持元素在视口中的相对位置
-        if (scrollDiff !== 0) {
-            window.scrollBy(0, scrollDiff);
+        // 隐藏克隆元素中的内容区域
+        const content = clone.querySelector('.rule-content');
+        if (content) {
+            content.style.display = 'none';
         }
-    });
-    
-    // 在拖动结束后移除克隆元素
-    requestAnimationFrame(() => {
-        document.body.removeChild(clone);
-    });
-}
 
-function handleDragOver(e) {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    
-    const dragItem = document.querySelector('.opacity-50');
-    const currentItem = e.target.closest('[draggable="true"]');
-    
-    if (!dragItem || !currentItem || dragItem === currentItem) return;
-    
-    const container = document.getElementById('telegramRulesList');
-    const rect = currentItem.getBoundingClientRect();
-    const mid = rect.top + rect.height / 2;
-    
-    if (e.clientY < mid) {
-        container.insertBefore(dragItem, currentItem);
-    } else {
-        container.insertBefore(dragItem, currentItem.nextSibling);
-    }
-}
+        // 设置克隆元素的样式
+        clone.style.position = 'absolute';
+        clone.style.left = '-9999px';
+        clone.style.top = '-9999px';
+        clone.style.opacity = '0.8';
+        clone.style.pointerEvents = 'none';
+        clone.style.height = 'auto';
+        clone.style.backgroundColor = 'rgba(30, 41, 59, 0.8)';
+        clone.style.border = '2px solid rgba(59, 130, 246, 0.5)';
 
-function handleDrop(e) {
-    e.preventDefault();
-    e.stopPropagation();
-}
+        // 添加克隆元素到文档中
+        document.body.appendChild(clone);
 
-function handleDragEnd(e) {
-    const dragItem = e.target.closest('[draggable="true"]');
-    if (dragItem) {
-        dragItem.classList.remove('opacity-50');
-    }
-    
-    // 记录当前滚动位置
-    const scrollTop = window.scrollY;
-    
-    // 使用 requestAnimationFrame 确保在下一帧显示内容
-    requestAnimationFrame(() => {
-        document.querySelectorAll('#telegramRulesList > div').forEach(rule => {
-            const content = rule.querySelector('.rule-content');
-            if (content) {
-                content.style.display = 'block';
-            }
-            // 重新更新一次标题
-            updateRuleTitle(rule.id);
-        });
-        
-        // 恢复到之前的滚动位置
-        window.scrollTo(0, scrollTop);
-    });
-}
+        // 设置自定义拖动图像
+        e.dataTransfer.setDragImage(clone, 0, 0);
 
-// 修改收集规则数据的函数
-function collectTelegramRules() {
-    const rules = [];
-    document.querySelectorAll('#telegramRulesList > div').forEach(ruleElement => {
-        const keyword = ruleElement.querySelector('[name="keyword"]').value.trim();
-        if (keyword) { // 只收集有关键词的规则
-            const rule = {
-                matchType: ruleElement.querySelector('[name="matchType"]').value,
-                keyword: keyword,
-                deleteTime: parseInt(ruleElement.querySelector('[name="deleteTime"]').value) || 0,
-                defaultReply: ruleElement.querySelector('[name="defaultReply"]').value,
-                levelRules: []
-            };
-            
-            // 收集等级规则
-            ruleElement.querySelectorAll('#' + ruleElement.id + '_levelRules > div').forEach(levelRule => {
-                rule.levelRules.push({
-                    minLevel: parseInt(levelRule.querySelector('[name="minLevel"]').value) || 0,
-                    maxLevel: parseInt(levelRule.querySelector('[name="maxLevel"]').value) || 0,
-                    reply: levelRule.querySelector('[name="reply"]').value
-                });
+        // 添加拖动样式
+        dragItem.classList.add('opacity-50');
+
+        // 立即隐藏所有规则的内容并调整滚动位置
+        requestAnimationFrame(() => {
+            document.querySelectorAll('#telegramRulesList > div').forEach(rule => {
+                const content = rule.querySelector('.rule-content');
+                if (content) {
+                    content.style.display = 'none';
+                }
             });
-            
-            rules.push(rule);
-        }
-    });
-    
-    return rules;
-}
 
-// 添加新规则函数
-function addTelegramRule() {
-    const container = document.getElementById('telegramRulesList');
-    const ruleId = 'rule_' + Date.now() + Math.random().toString(36).substr(2, 9);
-    
-    const ruleHtml = `
+            // 获取收缩后的位置
+            const newRect = dragItem.getBoundingClientRect();
+            const scrollDiff = newRect.top - initialTopOffset;
+
+            // 调整滚动位置以保持元素在视口中的相对位置
+            if (scrollDiff !== 0) {
+                window.scrollBy(0, scrollDiff);
+            }
+        });
+
+        // 在拖动结束后移除克隆元素
+        requestAnimationFrame(() => {
+            document.body.removeChild(clone);
+        });
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+
+        const dragItem = document.querySelector('.opacity-50');
+        const currentItem = e.target.closest('[draggable="true"]');
+
+        if (!dragItem || !currentItem || dragItem === currentItem) return;
+
+        const container = document.getElementById('telegramRulesList');
+        const rect = currentItem.getBoundingClientRect();
+        const mid = rect.top + rect.height / 2;
+
+        if (e.clientY < mid) {
+            container.insertBefore(dragItem, currentItem);
+        } else {
+            container.insertBefore(dragItem, currentItem.nextSibling);
+        }
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    function handleDragEnd(e) {
+        const dragItem = e.target.closest('[draggable="true"]');
+        if (dragItem) {
+            dragItem.classList.remove('opacity-50');
+        }
+
+        // 记录当前滚动位置
+        const scrollTop = window.scrollY;
+
+        // 使用 requestAnimationFrame 确保在下一帧显示内容
+        requestAnimationFrame(() => {
+            document.querySelectorAll('#telegramRulesList > div').forEach(rule => {
+                const content = rule.querySelector('.rule-content');
+                if (content) {
+                    content.style.display = 'block';
+                }
+                // 重新更新一次标题
+                updateRuleTitle(rule.id);
+            });
+
+            // 恢复到之前的滚动位置
+            window.scrollTo(0, scrollTop);
+        });
+    }
+
+    // 修改收集规则数据的函数
+    function collectTelegramRules() {
+        const rules = [];
+        document.querySelectorAll('#telegramRulesList > div').forEach(ruleElement => {
+            const keyword = ruleElement.querySelector('[name="keyword"]').value.trim();
+            if (keyword) { // 只收集有关键词的规则
+                const rule = {
+                    matchType: ruleElement.querySelector('[name="matchType"]').value,
+                    keyword: keyword,
+                    deleteTime: parseInt(ruleElement.querySelector('[name="deleteTime"]').value) || 0,
+                    defaultReply: ruleElement.querySelector('[name="defaultReply"]').value,
+                    levelRules: []
+                };
+
+                // 收集等级规则
+                ruleElement.querySelectorAll('#' + ruleElement.id + '_levelRules > div').forEach(levelRule => {
+                    rule.levelRules.push({
+                        minLevel: parseInt(levelRule.querySelector('[name="minLevel"]').value) || 0,
+                        maxLevel: parseInt(levelRule.querySelector('[name="maxLevel"]').value) || 0,
+                        reply: levelRule.querySelector('[name="reply"]').value
+                    });
+                });
+
+                rules.push(rule);
+            }
+        });
+
+        return rules;
+    }
+
+    // 添加新规则函数
+    function addTelegramRule() {
+        const container = document.getElementById('telegramRulesList');
+        const ruleId = 'rule_' + Date.now() + Math.random().toString(36).substr(2, 9);
+
+        const ruleHtml = `
         <div id="${ruleId}" class="bg-white/5 rounded-lg p-4 space-y-4" draggable="true">
             <div class="flex justify-between items-center">
                 <div class="flex items-center flex-1 cursor-move" data-drag-handle>
@@ -889,34 +875,36 @@ function addTelegramRule() {
             </div>
         </div>
     `;
-    
-    container.insertAdjacentHTML('beforeend', ruleHtml);
-    
-    // 添加事件监听器
-    const ruleElement = document.getElementById(ruleId);
-    const matchTypeSelect = ruleElement.querySelector('[name="matchType"]');
-    const keywordInput = ruleElement.querySelector('[name="keyword"]');
-    if (matchTypeSelect && keywordInput) {
-        matchTypeSelect.addEventListener('change', () => updateRuleTitle(ruleId));
-        keywordInput.addEventListener('input', () => updateRuleTitle(ruleId));
-    }
-}
 
-// 页面加载完成后初始化
-$(document).ready(function() {
-    // 初始化签到范围滑块
-    updateSignInRange();
-    
-    // 获取初始值（如果有的话）
-    let initialClientList = [];
-    let initialClientBlackList = [];
-    
-    try {
-        if ({:json_encode($settings['clientList'] ?? "")}) {
-            initialClientList = JSON.parse({:json_encode($settings['clientList'] ?? "[]")});
+        container.insertAdjacentHTML('beforeend', ruleHtml);
+
+        // 添加事件监听器
+        const ruleElement = document.getElementById(ruleId);
+        const matchTypeSelect = ruleElement.querySelector('[name="matchType"]');
+        const keywordInput = ruleElement.querySelector('[name="keyword"]');
+        if (matchTypeSelect && keywordInput) {
+            matchTypeSelect.addEventListener('change', () => updateRuleTitle(ruleId));
+            keywordInput.addEventListener('input', () => updateRuleTitle(ruleId));
         }
-        if ({:json_encode($settings['clientBlackList'] ?? "")}) {
-            initialClientBlackList = JSON.parse({:json_encode($settings['clientBlackList'] ?? "[]")});
+    }
+
+    // 页面加载完成后初始化
+    $(document).ready(function () {
+        // 初始化签到范围滑块
+        updateSignInRange();
+
+        // 获取初始值（如果有的话）
+        let initialClientList = [];
+        let initialClientBlackList = [];
+
+        try {
+            if ({: json_encode($settings['clientList'] ?? "")}) {
+        initialClientList = JSON.parse({: json_encode($settings['clientList'] ?? "[]")
+    });
+        }
+    if ({: json_encode($settings['clientBlackList'] ?? "")}) {
+        initialClientBlackList = JSON.parse({: json_encode($settings['clientBlackList'] ?? "[]")
+    });
         }
     } catch (e) {
         console.error('Error parsing initial values:', e);
@@ -926,7 +914,7 @@ $(document).ready(function() {
     initTagManager('clientListInput', 'clientListTags', 'clientListValue', initialClientList);
     initTagManager('clientBlackListInput', 'clientBlackListTags', 'clientBlackListValue', initialClientBlackList);
     initTelegramRules();
-    
+
     // 初始化拖拽功能
     initDragAndDrop();
 });

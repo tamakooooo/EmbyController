@@ -26,6 +26,38 @@ class Server extends BaseController
 {
     private $lifetimecost = 999;
     private $lifetimeauthority = 101;
+    
+    // 续期配置（默认值，实际值从数据库读取）
+    private $renewCost = 10;        // 续期费用（RCoin）
+    private $renewDays = 30;        // 续期时长（天）
+    private $renewSeconds = 2592000; // 续期时长（秒），30天 = 2592000秒
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->loadRenewConfig();
+    }
+
+    /**
+     * 从数据库加载续期配置
+     */
+    private function loadRenewConfig()
+    {
+        $sysConfigModel = new SysConfigModel();
+        
+        // 读取续期费用
+        $renewCostConfig = $sysConfigModel->where('key', 'renewCost')->find();
+        if ($renewCostConfig && $renewCostConfig['value']) {
+            $this->renewCost = intval($renewCostConfig['value']);
+        }
+        
+        // 读取续期天数
+        $renewDaysConfig = $sysConfigModel->where('key', 'renewDays')->find();
+        if ($renewDaysConfig && $renewDaysConfig['value']) {
+            $this->renewDays = intval($renewDaysConfig['value']);
+            $this->renewSeconds = $this->renewDays * 86400;
+        }
+    }
 
     public function index()
     {
@@ -73,6 +105,9 @@ class Server extends BaseController
         }
         View::assign('lifetimecost', $this->lifetimecost);
         View::assign('lifetimeauthority', $this->lifetimeauthority);
+        // 传递续期配置到视图
+        View::assign('renewCost', $this->renewCost);
+        View::assign('renewDays', $this->renewDays);
         $userModel = new UserModel();
         $userFromDatabase = $userModel->where('id', Session::get('r_user')->id)->find();
         $userFromDatabase['password'] = null;
@@ -650,8 +685,8 @@ class Server extends BaseController
             $user = $userModel->where('id', Session::get('r_user')->id)->find();
             $embyUserModel = new EmbyUserModel();
             $embyUser = $embyUserModel->where('userId', Session::get('r_user')->id)->find();
-            // 如果用户余额大于等于10
-            if ($user->rCoin >= 10) {
+            // 如果用户余额大于等于续期费用
+            if ($user->rCoin >= $this->renewCost) {
                 $activateTo = $embyUser['activateTo'];
                 if ($activateTo == null) {
                     return json([
@@ -660,19 +695,19 @@ class Server extends BaseController
                     ]);
                 }
                 if (strtotime($activateTo) > time()) {
-                    $activateTo = date('Y-m-d H:i:s', strtotime($activateTo) + 2592000);
+                    $activateTo = date('Y-m-d H:i:s', strtotime($activateTo) + $this->renewSeconds);
                 } else {
-                    $activateTo = date('Y-m-d H:i:s', time() + 2592000);
+                    $activateTo = date('Y-m-d H:i:s', time() + $this->renewSeconds);
                 }
                 $embyUser->activateTo = $activateTo;
                 $embyUser->save();
-                $user->rCoin = $user->rCoin - 10;
+                $user->rCoin = $user->rCoin - $this->renewCost;
                 $user->save();
                 $financeRecordModel = new FinanceRecordModel();
                 $financeRecordModel->save([
                     'userId' => Session::get('r_user')->id,
                     'action' => 3,
-                    'count' => 10,
+                    'count' => $this->renewCost,
                     'recordInfo' => [
                         'message' => '使用余额续期Emby账号'
                     ]

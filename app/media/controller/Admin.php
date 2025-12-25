@@ -1051,8 +1051,9 @@ class Admin extends BaseController
                         $config->value = $value;
                         $config->save();
                     } else {
-                        // 添加新配置
-                        $sysConfigModel->save([
+                        // 添加新配置 - 每次创建新的 Model 实例
+                        $newConfig = new SysConfigModel();
+                        $newConfig->save([
                             'key' => $key,
                             'value' => $value,
                             'appName' => 'media',
