@@ -1056,7 +1056,6 @@ class Admin extends BaseController
             $data = input('post.');
 
             try {
-                $sysConfigModel = new SysConfigModel();
                 // 处理可能的 JSON 数据
                 if (isset($data['clientList'])) {
                     $data['clientList'] = $data['clientList']; // 已经是 JSON 字符串了
@@ -1067,15 +1066,15 @@ class Admin extends BaseController
 
                 // 遍历提交的设置并更新
                 foreach ($data as $key => $value) {
-                    // 查找是否存在该配置
-                    $config = $sysConfigModel->where('key', $key)->find();
+                    // 每次查询使用新的 Model 实例，避免查询条件累积
+                    $config = (new SysConfigModel())->where('key', $key)->find();
 
                     if ($config) {
                         // 更新已存在的配置
                         $config->value = $value;
                         $config->save();
                     } else {
-                        // 添加新配置 - 每次创建新的 Model 实例
+                        // 添加新配置
                         $newConfig = new SysConfigModel();
                         $newConfig->save([
                             'key' => $key,
